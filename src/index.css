@@ -2,6 +2,7 @@
 
 @theme {
   /* Colors */
+  --color-logo: #24b363;
   --color-primary: #006e2f;
   --color-on-primary: #ffffff;
   --color-primary-container: #22c55e;
@@ -18,6 +19,7 @@
   --color-background: #f7f9fb;
   --color-surface: #ffffff;
   --color-surface-muted: #f2f4f6;
+  --color-surface-container: "#eceef0";
 
   --color-text-primary: #1e293b;
   --color-text-secondary: #64748b;
@@ -29,8 +31,61 @@
   --color-error: #ef4444;
   --color-info: #3b82f6;
 
-  /* Typography */
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-base: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-xxxl: 64px;
+
+  /**** Typography ****/
   --font-sans: "Inter", sans-serif;
+
+  /* Headings */
+  --text-headline-lg: 32px;
+  --text-headline-lg-line-height: 1.2;
+  --text-headline-lg-letter-spacing: -0.02em;
+  --text-headline-lg-font-weight: 700;
+
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile-line-height: 1.2;
+  --text-headline-lg-mobile-letter-spacing: -0.01em;
+  --text-headline-lg-mobile-font-weight: 700;
+
+  --text-headline-md: 24px;
+  --text-headline-md-line-height: 1.3;
+  --text-headline-md-font-weight: 600;
+
+  --text-headline-sm: 18px;
+  --text-headline-sm-line-height: 1.4;
+  --text-headline-sm-font-weight: 600;
+
+  /* Body */
+  --text-body-lg: 16px;
+  --text-body-lg-line-height: 1.6;
+  --text-body-lg-font-weight: 400;
+
+  --text-body-md: 14px;
+  --text-body-md-line-height: 1.5;
+  --text-body-md-font-weight: 400;
+
+  /* Labels */
+  --text-label-md: 14px;
+  --text-label-md-line-height: 1;
+  --text-label-md-font-weight: 500;
+
+  /* Buttons */
+  --text-button: 16px;
+  --text-button-line-height: 1;
+  --text-button-font-weight: 500;
+
+  /* Captions */
+  --text-caption: 12px;
+  --text-caption-line-height: 1.4;
+  --text-caption-font-weight: 400;
 
   /* Radius */
   --radius-sm: 0.25rem;
@@ -45,4 +100,100 @@
   --container-max: 1400px;
   --sidebar-width: 260px;
   --top-nav-height: 72px;
+}
+button {
+  cursor: pointer;
+}
+/* ===========================
+   Typography classes
+   =========================== */
+
+/* Headings */
+
+.headline-lg {
+  font-size: var(--text-headline-lg);
+  line-height: var(--text-headline-lg-line-height);
+  font-weight: var(--text-headline-lg-font-weight);
+  letter-spacing: var(--text-headline-lg-letter-spacing);
+}
+
+.headline-lg-mobile {
+  font-size: var(--text-headline-lg-mobile);
+  line-height: var(--text-headline-lg-mobile-line-height);
+  font-weight: var(--text-headline-lg-mobile-font-weight);
+  letter-spacing: var(--text-headline-lg-mobile-letter-spacing);
+}
+
+.headline-md {
+  font-size: var(--text-headline-md);
+  line-height: var(--text-headline-md-line-height);
+  font-weight: var(--text-headline-md-font-weight);
+}
+
+.headline-sm {
+  font-size: var(--text-headline-sm);
+  line-height: var(--text-headline-sm-line-height);
+  font-weight: var(--text-headline-sm-font-weight);
+}
+
+/* Body */
+
+.body-lg {
+  font-size: var(--text-body-lg);
+  line-height: var(--text-body-lg-line-height);
+}
+
+.body-md {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md-line-height);
+  font-weight: var(--text-body-md-font-weight);
+}
+
+/* Labels */
+
+.label-md {
+  font-size: var(--text-label-md);
+  line-height: var(--text-label-md-line-height);
+  font-weight: var(--text-label-md-font-weight);
+}
+
+/* Buttons */
+
+.button-text {
+  font-size: var(--text-button);
+  line-height: var(--text-button-line-height);
+  font-weight: var(--text-button-font-weight);
+}
+
+/* Captions */
+
+.caption {
+  font-size: var(--text-caption);
+  line-height: var(--text-caption-line-height);
+  font-weight: var(--text-caption-font-weight);
+}
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.hero-gradient {
+  background: radial-gradient(
+    circle at 70% 30%,
+    rgba(34, 197, 94, 0.08) 0%,
+    transparent 60%
+  );
 }
