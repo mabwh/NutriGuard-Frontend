@@ -43,7 +43,7 @@ export const otpSchema = z.object({
 });
 export const resetPasswordSchema = z
     .object({
-        password: z
+        newPassword: z
             .string()
             .min(8, "Password must be at least 8 characters")
             .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
@@ -52,7 +52,7 @@ export const resetPasswordSchema = z
 
         confirmPassword: z.string(),
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine((data) => data.newPassword === data.confirmPassword, {
         message: "Passwords do not match",
         path: ["confirmPassword"],
     });

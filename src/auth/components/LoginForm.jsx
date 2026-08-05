@@ -9,28 +9,48 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../utils/validation";
 import { useNavigate } from "react-router-dom";
+//api
+import { login } from "../api/auth";
+import { useState } from "react";
+import BackendErrorMessage from "../../components/BackendErrorMessage";
 
-export default function LoginForm() {
+export default function LoginForm({ successMessage }) {
+  const [backendError, setBackendError] = useState("");
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors ,isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     try {
-      console.log(data);
+      console.log("data sent to api \n", data);
+      const reply = await login(data.email, data.password);
+      if (reply.isSuccess) {
+        //store user in global state
+        //rediredt to dashboard
+        navigate("/dashboard");
+      }
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data);
+      setBackendError(
+        error.response?.data?.message || "Login failed. Try again ",
+      );
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <BackendErrorMessage message={backendError} />
+      {successMessage && (
+        <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 text-center font-medium mb-3">
+          {successMessage}
+        </div>
+      )}
       <div>
         <h1 className="text-3xl font-bold text-text-primary">Welcome Back</h1>
 
@@ -63,7 +83,7 @@ export default function LoginForm() {
         <Checkbox id="remember" name="remember" label="Remember me" />
 
         <button
-        onClick={()=>navigate('/forgot-password')}
+          onClick={() => navigate("/forgot-password")}
           type="button"
           className="text-sm font-medium text-primary hover:underline"
         >
@@ -71,7 +91,7 @@ export default function LoginForm() {
         </button>
       </div>
 
-      <Button type="submit">Log In</Button>
+      <Button type="submit" disabled={isSubmitting}>Log In</Button>
 
       <Divider />
 

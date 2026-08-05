@@ -7,29 +7,48 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "../utils/validation";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import BackendErrorMessage from "../../components/BackendErrorMessage";
+//api
+import { signup } from "../api/auth.js";
 
 export default function SignupForm() {
+  const [backendError, setBackendError] = useState("");
+
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signupSchema),
     mode: "onBlur",
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     try {
-      console.log(data);
+      console.log("data sent to api", data);
+      const reply = await signup(data);
+      if (reply.isSuccess) {
+        //redirect to login to begin session
+        navigate("/login", {
+          state: {
+            successMessage: `Your account has been created successfully.
+             Please log in to continue.`,
+          },
+        });
+      }
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data);
+      //when email already exists
+      setBackendError(error.response?.data?.message);
     }
   };
 
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+        <BackendErrorMessage message={backendError} />
         <div>
           <h1 className="text-3xl font-bold text-text-primary">
             Create Account
@@ -80,7 +99,9 @@ export default function SignupForm() {
           error={errors.confirmPassword?.message}
         />
 
-        <Button type="submit">Sign In</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          Create Account
+        </Button>
 
         <Divider />
 

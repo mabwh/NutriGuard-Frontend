@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { otpSchema, resetPasswordSchema } from "../utils/validation";
+import { forgetPassword, resetPassword, verifyOtp } from "../api/auth";
+import BackendErrorMessage from "../../components/BackendErrorMessage";
 
 export default function Forgetpassword() {
   const navigate = useNavigate();
@@ -17,7 +19,8 @@ export default function Forgetpassword() {
   const {
     register: registerOtp,
     handleSubmit: handleOtpSubmit,
-    formState: { errors: otpErrors },
+    formState: { errors: otpErrors, isSubmitting: isOtpSubmitting },
+    resetField,
   } = useForm({
     resolver: zodResolver(otpSchema),
   });
@@ -25,28 +28,92 @@ export default function Forgetpassword() {
   const {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
-    formState: { errors: passwordErrors },
+    formState: {
+      errors: passwordErrors,
+      isSubmitting: isResetPasswordSubmitting,
+    },
   } = useForm({
     resolver: zodResolver(resetPasswordSchema),
   });
+  //backend message
+  const [backendMessage, setBackendMessage] = useState("");
+  const [backendError, setBackendError] = useState("");
 
   //handlers
-  const handleSubmitEmail = (e) => {
+  const handleSubmitEmail = async (e) => {
     e.preventDefault();
-    console.log("emmail submitted", email);
-    if (email) setStep(2);
+    if (email) {
+      try {
+        const reply = await forgetPassword(email);
+        if (reply.message.isSuccess) {
+          setBackendMessage(reply.message.message);
+          setStep(2);
+        }
+      } catch (error) {
+        console.log(error.response?.data);
+        setBackendError(error.response?.data?.message.message);
+      }
+    }
   };
 
-  const handleSubmitOtp = (data) => {
-    console.log("OTP submitted", data);
-
-    setStep(3);
+  const resendCode = async () => {
+    try {
+      const reply = await forgetPassword(email);
+      if (reply.isSuccess) {
+        setBackendMessage("if the email exist the code has been resend");
+        // clear error message
+        setBackendError("");
+        // Clear the OTP input
+        resetField("otp");
+      }
+    } catch (error) {
+      console.log(error.response?.data);
+      setBackendError(error.response?.data?.message);
+    }
   };
 
-  const handleSubmitNewPassword = (data) => {
-    console.log(data);
+  const handleSubmitOtp = async (data) => {
+    //clear previous errors
+    setBackendError("");
+    const requestData = {
+      email,
+      ...data,
+    };
 
-    navigate("/login");
+    try {
+      const reply = await verifyOtp(requestData);
+      if (reply.isSuccess) {
+        setStep(3);
+      }
+    } catch (error) {
+      console.log(error.response?.data);
+      setBackendError(error.response?.data?.message);
+    }
+  };
+
+  const handleSubmitNewPassword = async (data) => {
+    //clear previous errors
+    setBackendError("");
+    const requestData = {
+      email,
+      ...data,
+    };
+
+    try {
+      const reply = await resetPassword(requestData);
+      if (reply.isSuccess) {
+        navigate("/login", {
+          state: {
+            successMessage:
+              "Your password has been reset successfully. Please log in ",
+          },
+        });
+      }
+    } catch (error) {
+      setBackendError(
+        error.response?.data?.message || "Failed to reset password.",
+      );
+    }
   };
 
   switch (step) {
@@ -92,6 +159,12 @@ export default function Forgetpassword() {
       return (
         <>
           <ForgetCardWbg>
+            {backendMessage && (
+              <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 text-center font-medium">
+                {backendMessage}
+              </div>
+            )}
+            <BackendErrorMessage message={backendError} />
             <h1 className="text-2xl font-semibold">Verify Your Email</h1>
             <p className="text-center text-sm text-text-secondary">
               {" "}
@@ -110,11 +183,17 @@ export default function Forgetpassword() {
                 type="text"
               />
               <Button
+                disabled={isOtpSubmitting}
                 type="submit"
                 className="flex justify-center items-center gap-3"
               >
                 Verify Code <FaArrowRight />{" "}
               </Button>
+              {backendError && (
+                <Button type="button" onClick={resendCode}>
+                  Resend Code
+                </Button>
+              )}
             </form>
 
             <button
@@ -132,6 +211,7 @@ export default function Forgetpassword() {
       return (
         <>
           <ForgetCardWbg>
+            <BackendErrorMessage message={backendError} />
             <h1 className="text-2xl font-semibold">Reset Password</h1>
             <p className="text-center text-sm text-text-secondary">
               {" "}
@@ -144,8 +224,8 @@ export default function Forgetpassword() {
             >
               <Input
                 key="newpass"
-                {...registerPassword("password")}
-                error={passwordErrors.password?.message}
+                {...registerPassword("newPassword")}
+                error={passwordErrors.newPassword?.message}
                 type="password"
                 label="New password"
               />
@@ -155,7 +235,9 @@ export default function Forgetpassword() {
                 type="password"
                 label="Confirm password"
               />
-              <Button type="submit">Reset Password</Button>
+              <Button disabled={isResetPasswordSubmitting} type="submit">
+                Reset Password
+              </Button>
             </form>
 
             <button

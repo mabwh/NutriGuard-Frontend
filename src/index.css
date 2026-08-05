@@ -172,6 +172,7 @@ button {
   line-height: var(--text-caption-line-height);
   font-weight: var(--text-caption-font-weight);
 }
+/* classes for home page */
 .glass-card {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);

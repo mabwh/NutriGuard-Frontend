@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import Forgetpassword from "./auth/screens/Forgetpassword";
 import Signup from "./auth/screens/Signup";
 import MainLayout from "./layouts/Mainlayout";
+import Dashboard from "./pages/Dashboard";
+import CreateHealthProfile from "./pages/CreateHealthProfile";
 
 export default function App() {
   return (
@@ -11,6 +13,11 @@ export default function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/create-health-profile"
+            element={<CreateHealthProfile />}
+          />
         </Route>
 
         <Route path="/login" element={<Login />} />

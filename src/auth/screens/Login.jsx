@@ -1,8 +1,12 @@
+import { useLocation } from "react-router-dom";
 import AuthLayout from "../../layouts/Authlayout";
 import HeroSection from "../components/HeroSection";
 import LoginForm from "../components/LoginForm";
 
+
 export default function Login() {
+  const location = useLocation();
+  const successMessage = location.state?.successMessage;
   return (
     <>
       <AuthLayout
@@ -16,7 +20,7 @@ export default function Login() {
           />
         }
       >
-        <LoginForm />
+        <LoginForm  successMessage={successMessage}/>
       </AuthLayout>
     </>
   );
