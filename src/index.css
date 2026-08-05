@@ -19,7 +19,7 @@
   --color-background: #f7f9fb;
   --color-surface: #ffffff;
   --color-surface-muted: #f2f4f6;
-  --color-surface-container: "#eceef0";
+  --color-surface-container: #eceef0;
 
   --color-text-primary: #1e293b;
   --color-text-secondary: #64748b;
@@ -101,73 +101,71 @@
   --sidebar-width: 260px;
   --top-nav-height: 72px;
 }
+/* global classes */
 button {
   cursor: pointer;
 }
+html {
+  scroll-behavior: smooth;
+}
+body{
+  overflow-x: hidden;
+}
 /* ===========================
-   Typography classes
+   Typography utilities
    =========================== */
 
-/* Headings */
-
-.headline-lg {
+@utility headline-lg {
   font-size: var(--text-headline-lg);
   line-height: var(--text-headline-lg-line-height);
   font-weight: var(--text-headline-lg-font-weight);
   letter-spacing: var(--text-headline-lg-letter-spacing);
 }
 
-.headline-lg-mobile {
+@utility headline-lg-mobile {
   font-size: var(--text-headline-lg-mobile);
   line-height: var(--text-headline-lg-mobile-line-height);
   font-weight: var(--text-headline-lg-mobile-font-weight);
   letter-spacing: var(--text-headline-lg-mobile-letter-spacing);
 }
 
-.headline-md {
+@utility headline-md {
   font-size: var(--text-headline-md);
   line-height: var(--text-headline-md-line-height);
   font-weight: var(--text-headline-md-font-weight);
 }
 
-.headline-sm {
+@utility headline-sm {
   font-size: var(--text-headline-sm);
   line-height: var(--text-headline-sm-line-height);
   font-weight: var(--text-headline-sm-font-weight);
 }
 
-/* Body */
-
-.body-lg {
+@utility body-lg {
   font-size: var(--text-body-lg);
   line-height: var(--text-body-lg-line-height);
+  font-weight: var(--text-body-lg-font-weight);
 }
 
-.body-md {
+@utility body-md {
   font-size: var(--text-body-md);
   line-height: var(--text-body-md-line-height);
   font-weight: var(--text-body-md-font-weight);
 }
 
-/* Labels */
-
-.label-md {
+@utility label-md {
   font-size: var(--text-label-md);
   line-height: var(--text-label-md-line-height);
   font-weight: var(--text-label-md-font-weight);
 }
 
-/* Buttons */
-
-.button-text {
+@utility button-text {
   font-size: var(--text-button);
   line-height: var(--text-button-line-height);
   font-weight: var(--text-button-font-weight);
 }
 
-/* Captions */
-
-.caption {
+@utility caption {
   font-size: var(--text-caption);
   line-height: var(--text-caption-line-height);
   font-weight: var(--text-caption-font-weight);
