@@ -271,7 +271,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="w-full py-xl px-lg bg-surface-muted ">
+      <footer className="w-full pt-xl pb-md px-lg bg-surface-muted ">
         <div className=" max-w-max mx-auto flex flex-col md:flex-row justify-between gap-xl">
           <div className="flex flex-col items-start gap-xs flex-1 ">
             <div class="flex items-center gap-sm mb-xs">
@@ -359,7 +359,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="max-w-max mx-auto mt-md pt-md  border-t border-border flex-col md:flex-row justify-between items-center ">
+        <div className="max-w-max mx-auto mt-md pt-md  border-t border-border  flex flex-col md:flex-row justify-between md:items-center ">
           <div className="mb-5">
             <p className=" caption text-text-secondary ">
               © 2026 NutriGuard. Intelligent Wellness
@@ -371,19 +371,19 @@ export default function Home() {
               className="text-text-secondary hover:text-[#22C55E] transition-colors"
               href="#"
             >
-              <FaInstagram size={30} />
+              <FaInstagram className="w-5.5 h-5.5 md:w-7.5 md:h-7.5" />
             </a>
             <a
               className="text-text-secondary hover:text-[#22C55E] transition-colors"
               href="#"
             >
-              <FaFacebook size={30} />
+              <FaFacebook className="w-5.5 h-5.5 md:w-7.5 md:h-7.5" />
             </a>
             <a
               className="text-text-secondary hover:text-[#22C55E] transition-colors"
               href="#"
             >
-              <FaTiktok size={30} />
+              <FaTiktok className="w-5.5 h-5.5 md:w-7.5 md:h-7.5" />
             </a>
           </div>
         </div>
