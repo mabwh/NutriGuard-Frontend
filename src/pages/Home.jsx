@@ -272,7 +272,7 @@ export default function Home() {
       </section>
 
       <footer className="w-full py-xl px-lg bg-surface-muted ">
-        <div className=" px-xl max-w-max mx-auto flex flex-col md:flex-row justify-between gap-xl">
+        <div className=" max-w-max mx-auto flex flex-col md:flex-row justify-between gap-xl">
           <div className="flex flex-col items-start gap-xs flex-1 ">
             <div class="flex items-center gap-sm mb-xs">
               <FaLeaf size={35} color="#006e2f" />
@@ -280,7 +280,7 @@ export default function Home() {
                 NutriGuard
               </span>
             </div>
-            <p className="body-md text-text-secondary pl-10">
+            <p className="body-md text-text-secondary md:pl-10">
               Log in to unlock your personalized nutrition plan and take the
               next step toward a healthier more vibrant you
             </p>
@@ -359,14 +359,14 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="max-w-max mx-auto mt-md pt-md  border-t border-border flex justify-between items-center ">
-          <div>
+        <div className="max-w-max mx-auto mt-md pt-md  border-t border-border flex-col md:flex-row justify-between items-center ">
+          <div className="mb-5">
             <p className=" caption text-text-secondary ">
               © 2026 NutriGuard. Intelligent Wellness
             </p>
           </div>
 
-          <div className="  flex items-center gap-md">
+          <div className="  flex  items-center gap-md">
             <a
               className="text-text-secondary hover:text-[#22C55E] transition-colors"
               href="#"
