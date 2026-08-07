@@ -12,7 +12,7 @@
   --color-on-secondary: #ffffff;
   --color-secondary-container: #6df5e1;
   --color-on-secondary-container: #006f64;
-
+  --color-secondary-fixed-dim: #4fdbc8;
   --color-tertiary: #005ac2;
   --color-on-tertiary: #ffffff;
 
@@ -20,13 +20,11 @@
   --color-surface: #ffffff;
   --color-surface-muted: #f2f4f6;
   --color-surface-container: #eceef0;
-  --color-surface-container-high: #E6E8EA;
-
+  --color-surface-container-high: #e6e8ea;
 
   --color-text-primary: #1e293b;
   --color-text-secondary: #64748b;
   --color-text-on-surface: #3d4a3d;
-
 
   --color-border: #e2e8f0;
 
@@ -112,7 +110,7 @@ button {
 html {
   scroll-behavior: smooth;
 }
-body{
+body {
   overflow-x: hidden;
 }
 /* ===========================
@@ -201,4 +199,9 @@ body{
   );
 }
 /*******************/
-.active-nav-glow { box-shadow: 0 0 15px rgba(0, 253, 93, 0.2); }
+.active-nav-glow {
+  box-shadow: 0 0 15px rgba(0, 253, 93, 0.2);
+}
+.card-shadow {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+}
