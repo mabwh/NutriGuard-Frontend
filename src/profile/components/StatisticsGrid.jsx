@@ -3,12 +3,15 @@ import Card from '../../components/Card'
 import { FaRegBookmark } from "react-icons/fa";
 import { MdOutlineRestaurant } from "react-icons/md";
 import { FaFireAlt } from "react-icons/fa";
+import { IoIosTrendingUp } from "react-icons/io";
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import { MdOutlineWorkspacePremium } from "react-icons/md";
 
 
 
 function StatisticsGrid() {
   return (
-    <Card className='border'>
+    <div>
       {/* StatisticCard ×3 */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
         <Card
@@ -16,7 +19,8 @@ function StatisticsGrid() {
         icon={<FaRegBookmark/>}
         label='Recipes Saved'
         content='48'
-        insight={<span>+12% this month</span>}
+        insight={<span><IoIosTrendingUp className='inline'/> +12% this month</span>}
+        insightType="success"
         />
 
         <Card
@@ -24,7 +28,8 @@ function StatisticsGrid() {
         icon={<MdOutlineRestaurant/>}
         label='Meals Completed'
         content='156'
-        insight={<span>92% adherence</span>}
+        insight={<span><IoIosCheckmarkCircleOutline className='inline'/> 92% adherence</span>}
+        insightType="info"
         />
 
         <Card
@@ -32,10 +37,11 @@ function StatisticsGrid() {
         icon={<FaFireAlt/>}
         label='Current Streak'
         content='12 Days'
-        insight={<span>Personal Record!</span>}
+        insight={<span><MdOutlineWorkspacePremium className='inline'/> Personal Record!</span>}
+        insightType="warning"
         />
       </div>
-    </Card>
+    </div>
   )
 }
 

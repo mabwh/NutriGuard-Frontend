@@ -20,6 +20,13 @@ export default function Button({
     buttonStyle = "bg-error text-white hover:opacity-90";
   }
 
+  const hoverMap = {
+    primary: "hover:bg-primary/90",
+    secondary: "hover:bg-primary/10",
+    ghost: "hover:bg-surface-muted",
+    danger: "hover:opacity-90",
+};
+
   return (
     <button
       type={type}
@@ -40,6 +47,10 @@ export default function Button({
         font-medium
         transition
         duration-200
+        active:transform
+        active:scale-[0.98]
+        select-none
+        ${hoverMap[variant]}
         disabled:cursor-not-allowed
         disabled:opacity-50
         ${buttonStyle}
