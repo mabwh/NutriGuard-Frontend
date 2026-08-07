@@ -3,6 +3,7 @@ export default function Button({
   type = "button",
   variant = "primary",
   disabled = false,
+  round = false,
   className = "",
   ...props
 }) {
@@ -23,11 +24,19 @@ export default function Button({
     <button
       type={type}
       disabled={disabled}
-      className={`
-        w-full
+      className={
+        (round
+        ?
+        `w-fit
+        rounded-full
+        p-2`
+        :
+        `w-full
         rounded-md
         px-5
-        py-3
+        py-3`)
+        +
+        `
         font-medium
         transition
         duration-200

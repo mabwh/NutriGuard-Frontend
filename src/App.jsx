@@ -6,6 +6,7 @@ import Signup from "./auth/screens/Signup";
 import MainLayout from "./layouts/Mainlayout";
 import Dashboard from "./pages/Dashboard";
 import CreateHealthProfile from "./pages/CreateHealthProfile";
+// import ProfileView from "./profile/screens/ProfileView"
 
 export default function App() {
   return (
