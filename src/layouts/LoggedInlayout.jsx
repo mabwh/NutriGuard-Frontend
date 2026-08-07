@@ -106,8 +106,10 @@ export default function LoggedInlayout() {
             <IoChevronBack size={20} />
           )}
         </button>
+
         <nav className=" flex flex-col gap-1 text-text-on-surface">
-          <button
+          <Link
+            to={"/dashboard"}
             className={`
     flex
     items-center
@@ -137,7 +139,7 @@ export default function LoggedInlayout() {
             >
               Dashboard
             </span>
-          </button>
+          </Link>
           <button
             onClick={() => setIsOpen(false)}
             className={`
@@ -192,7 +194,8 @@ export default function LoggedInlayout() {
               Daily Plan
             </span>
           </button>
-          <button
+          <Link
+            to={"/profile"}
             onClick={() => setIsOpen(false)}
             className={`
     flex
@@ -221,7 +224,7 @@ export default function LoggedInlayout() {
             >
               My Profile
             </span>
-          </button>
+          </Link>
           <button
             onClick={() => setIsOpen(false)}
             className={`
