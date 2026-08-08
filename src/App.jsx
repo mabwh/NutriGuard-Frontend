@@ -7,7 +7,7 @@ import MainLayout from "./layouts/Mainlayout";
 import Dashboard from "./pages/Dashboard";
 import CreateHealthProfile from "./pages/CreateHealthProfile";
 import LoggedInlayout from "./layouts/LoggedInlayout";
-import Profile from "./profile/screens/ProfileView";
+import Profile from './profile/screens/Profile'
 
 export default function App() {
   return (
@@ -23,7 +23,7 @@ export default function App() {
         </Route>
         <Route element={<LoggedInlayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<Profile/>} />
         </Route>
 
         <Route path="/login" element={<Login />} />
