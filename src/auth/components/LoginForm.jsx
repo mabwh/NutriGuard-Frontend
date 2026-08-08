@@ -20,7 +20,7 @@ export default function LoginForm({ successMessage }) {
   const {
     register,
     handleSubmit,
-    formState: { errors ,isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
@@ -32,8 +32,12 @@ export default function LoginForm({ successMessage }) {
       const reply = await login(data.email, data.password);
       if (reply.isSuccess) {
         //store user in global state
-        //rediredt to dashboard
-        navigate("/dashboard");
+        //rediredt to dashboard or create health profile
+        if (reply.isProfileCompleted) {
+          navigate("/dashboard");
+        } else if (!reply.isProfileCompleted) {
+          navigate("/create-health-profile");
+        }
       }
     } catch (error) {
       console.log(error.response?.data);
@@ -91,7 +95,9 @@ export default function LoginForm({ successMessage }) {
         </button>
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>Log In</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        Log In
+      </Button>
 
       <Divider />
 
