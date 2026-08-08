@@ -4,8 +4,9 @@ import { MdAccessibilityNew } from "react-icons/md";
 import Card from '../../components/Card'
 import Button from '../../components/Button'
 import pfp from '../../../public/pfp.svg'
+import { IoSave } from "react-icons/io5";
 
-function ProfileCard({toggleProfileEdit}) {
+function ProfileCard({setProfileEdit, profileEdit, triggerSubmit}) {
   return (
     <>
     <Card className='md:col-span-4 flex flex-col items-center text-center h-full'>
@@ -38,10 +39,16 @@ function ProfileCard({toggleProfileEdit}) {
 
       {/* Edit Profile Button */}
 
-      <Button onClick={toggleProfileEdit} 
+      <Button onClick={()=>{
+        setProfileEdit(!profileEdit);
+        if(profileEdit){
+          triggerSubmit();
+        }
+      }} 
       className="w-full py-3 border rounded-md flex items-center justify-center gap-2">
-          <MdAccessibilityNew />
-          Edit Health Profile
+        {!profileEdit
+        ? <><MdAccessibilityNew /> Edit Health Profile</> 
+        : <><IoSave/> Save profile updates</> }
       </Button>
 
     </Card>

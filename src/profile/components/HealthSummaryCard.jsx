@@ -1,5 +1,6 @@
 import React from 'react'
 import Card from '../../components/Card'
+import { GiBodyHeight } from "react-icons/gi";
 import { MdStraighten } from "react-icons/md";
 import { LuWeight } from "react-icons/lu";
 import { FaRunning } from "react-icons/fa";
@@ -21,15 +22,15 @@ function HealthSummaryCard() {
       <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
         <Card
         variant='HealthStat'
-        icon={<MdStraighten />} 
-        label='Height'
-        content='175cm'/>
-
-        <Card
-        variant='HealthStat'
         icon={<LuWeight />} 
         label='Weight'
         content='70kg'/>
+        
+        <Card
+        variant='HealthStat'
+        icon={<MdStraighten />} 
+        label='Waist'
+        content='75cm'/>
 
         <Card
         variant='HealthStat'

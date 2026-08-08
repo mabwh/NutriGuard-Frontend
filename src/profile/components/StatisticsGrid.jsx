@@ -1,11 +1,11 @@
 import React from 'react'
 import Card from '../../components/Card'
 import { FaRegBookmark } from "react-icons/fa";
-import { MdOutlineRestaurant } from "react-icons/md";
 import { FaFireAlt } from "react-icons/fa";
 import { IoIosTrendingUp } from "react-icons/io";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { MdOutlineWorkspacePremium } from "react-icons/md";
+import { BsForkKnife } from "react-icons/bs";
 
 
 
@@ -25,7 +25,7 @@ function StatisticsGrid() {
 
         <Card
         variant='Statistic' 
-        icon={<MdOutlineRestaurant/>}
+        icon={<BsForkKnife/>}
         label='Meals Completed'
         content='156'
         insight={<span><IoIosCheckmarkCircleOutline className='inline'/> 92% adherence</span>}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Card from '../../components/Card'
 import Input from '../../components/Input'
 import Select from '../../components/Select'
@@ -6,7 +6,13 @@ import Textarea from '../../components/Textarea'
 import CardHeader from './CardHeader'
 import { MdAccountCircle } from "react-icons/md";
 
-function ProfileEdit() {
+function ProfileEdit({registerSubmit}) {
+    const submit = () => {
+        alert("form submitted");
+    };
+
+    useEffect(() => registerSubmit(()=>submit()), [registerSubmit]);
+
   return (
     <Card>
         <CardHeader icon={<MdAccountCircle/>} 
@@ -14,7 +20,8 @@ function ProfileEdit() {
             badgeMsg='Incomplete Profile'
             badgeType='warning'/>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={(e) => e.preventDefault()}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
             <Input
                 type="number"
@@ -55,7 +62,7 @@ function ProfileEdit() {
             ]}/>
         </div>
 
-        <div className="md:col-span-2 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
             <Select label='Activity Level' options={[
                 {value:1, name:'Sedentary (Office job)', selected:false, disabled: false},
                 {value:2, name:'Lightly Active (Exercise 1-2 days/week)', selected:true, disabled: false},

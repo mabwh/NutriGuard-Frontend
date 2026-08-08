@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import ProfileCard from '../components/ProfileCard'
 import HealthSummaryCard from '../components/HealthSummaryCard'
 import StatisticsGrid from '../components/StatisticsGrid'
@@ -21,7 +21,9 @@ function ProfileHeader() {
 function ProfilePage() {
   
   const [profileEdit, setProfileEdit] = useState(false);
-  const toggleProfileEdit = () => setProfileEdit(!profileEdit);
+  const submitRef = useRef(null);
+
+  const triggerSubmit = () => submitRef.current?.();
 
   return (
     //Container
@@ -31,7 +33,10 @@ function ProfilePage() {
 
         {/* Main Grid */}
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <ProfileCard toggleProfileEdit = {toggleProfileEdit}/>
+            <ProfileCard setProfileEdit = {setProfileEdit}
+              profileEdit = {profileEdit}
+              triggerSubmit = {triggerSubmit}
+            />
             
             {/* Right Column */}
             <div class="md:col-span-8 flex flex-col gap-6">
@@ -42,7 +47,9 @@ function ProfilePage() {
                 <StatisticsGrid/>
                 </>
                 :
-                <ProfileEdit/>
+                <ProfileEdit registerSubmit={
+                  (fn) => {submitRef.current = fn}
+                }/>
                 }
             </div>
         </div>
