@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import { useState } from "react";
 import BackendErrorMessage from "../../components/BackendErrorMessage";
+//zustand
+import { authStore } from "../../store/auth";
 
 export default function LoginForm({ successMessage }) {
   const [backendError, setBackendError] = useState("");
@@ -26,16 +28,19 @@ export default function LoginForm({ successMessage }) {
     mode: "onBlur",
   });
 
+  //ZUSTAND
+  const setAuth = authStore((state) => state.setAuth);
+
   const onSubmit = async (data) => {
     try {
-      console.log("data sent to api \n", data);
       const reply = await login(data.email, data.password);
       if (reply.isSuccess) {
         //store user in global state
+        setAuth(reply);
         //rediredt to dashboard or create health profile
         if (reply.isProfileCompleted) {
           navigate("/dashboard");
-        } else if (!reply.isProfileCompleted) {
+        } else {
           navigate("/create-health-profile");
         }
       }

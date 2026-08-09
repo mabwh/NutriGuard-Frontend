@@ -7,8 +7,12 @@ import { IoMdFitness } from "react-icons/io";
 import { LuChartNoAxesCombined } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineForum } from "react-icons/md";
+//zustand
+import { authStore } from "../store/auth";
 
 export default function Dashboard() {
+  const user = authStore((state) => state.user);
+
   return (
     <>
       <div className="mx-auto max-w-max p-xl">
@@ -16,7 +20,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <h1 className="headline-lg text-primary mb-3 md:mb-1">
-              Good Morning, Sarah!
+              Good Morning, {user.name} !
             </h1>
             <p className="text-text-secondary body-lg">
               Here's how your health journey looks today
