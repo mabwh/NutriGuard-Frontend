@@ -5,6 +5,7 @@ export default function Select({
   className = "",
   options = [],
   children,
+  placeholder,
   ...props
 }) {
   return (
@@ -36,17 +37,29 @@ export default function Select({
         `}
         {...props}
       >
-        {
-            options.map((data, index) =>{
-                return <option key={index}
-                 value={data.value}
-                 selected={data.selected} 
-                 disabled={data.disabled}
-                 className={!data.disabled
-                    ?"bg-surface text-text-primary"
-                    :"bg-surface text-text-secondary"}>{data.name}</option>
-            })
-        }
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+
+        {options.map((data, index) => {
+          return (
+            <option
+              key={index}
+              value={data.value}
+              selected={data.selected}
+              disabled={data.disabled}
+              className={
+                !data.disabled
+                  ? "bg-surface text-text-primary"
+                  : "bg-surface text-text-secondary"
+              }
+            >
+              {data.name}
+            </option>
+          );
+        })}
         {children}
       </select>
 

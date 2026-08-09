@@ -9,7 +9,55 @@ import {
 import Input from "../components/Input";
 import Select from "../components/Select";
 import Button from "../components/Button";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { chpSechema } from "../utils/validation";
 export default function CreateHealthProfile() {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(chpSechema),
+    mode: "onBlur",
+    defaultValues: {
+      activityLevel: "",
+    },
+  });
+
+  const height = watch("height");
+  const weight = watch("weight");
+
+  const calculateGoal = (bmi) => {
+    if (bmi < 18.5) {
+      return 3; // Gain weight
+    }
+
+    if (bmi < 25) {
+      return 2; // Maintain weight
+    }
+
+    return 1; // Lose weight
+  };
+
+  //useEffects
+  useEffect(() => {
+    if (height > 0 && weight > 0) {
+      const heightInMeters = height / 100;
+      const bmi = weight / (heightInMeters * heightInMeters);
+
+      setValue("goal", calculateGoal(bmi));
+    }
+  }, [height, weight, setValue]);
+
+  //handlers
+  const handleSubmitHealthForm = (data) => {
+    console.log(data);
+    //call api
+  };
   return (
     <>
       <div className=" py-xxl px-md flex items-center justify-center">
@@ -67,7 +115,14 @@ export default function CreateHealthProfile() {
               </p>
             </div>
 
-            <form className="space-y-xl" id="healthProfileForm">
+            <form
+              className="space-y-xl"
+              id="healthProfileForm"
+              onSubmit={handleSubmit(handleSubmitHealthForm)}
+            >
+              {errors.goal && (
+                <p className="text-sm text-error">{errors.goal?.message}</p>
+              )}
               {/* <!-- Section 1: Personal Information --> */}
               <div className="space-y-md">
                 <div className="flex items-center gap-sm pb-sm border-b border-surface-container mb-5">
@@ -85,7 +140,12 @@ export default function CreateHealthProfile() {
                     <label className="label-md text-text-secondary px-xs">
                       Date of Birth
                     </label>
-                    <Input placeholder="MM/DD/YYYY" type="date" />
+                    <Input
+                      {...register("dateOfBirth")}
+                      error={errors.dateOfBirth?.message}
+                      placeholder="MM/DD/YYYY"
+                      type="date"
+                    />
                   </div>
                   <div className="flex flex-col gap-md">
                     <label className=" label-md text-text-secondary px-xs">
@@ -94,14 +154,18 @@ export default function CreateHealthProfile() {
                     <div className="flex gap-sm h-full items-center">
                       <label className="flex-1 flex items-center justify-center gap-xs cursor-pointer border border-border rounded-xl py-sm hover:bg-surface-container transition-all">
                         <input
+                          {...register("gender")}
                           name="gender"
                           type="radio"
+                          value={1}
                           className="accent-success"
                         />
                         <span className=" body-md text-text-primary">Male</span>
                       </label>
                       <label className="flex-1 flex items-center justify-center gap-xs cursor-pointer border border-border rounded-xl px-sm py-sm hover:bg-surface-container transition-all">
                         <input
+                          {...register("gender")}
+                          value={2}
                           name="gender"
                           type="radio"
                           className="accent-success"
@@ -112,6 +176,11 @@ export default function CreateHealthProfile() {
                         </span>
                       </label>
                     </div>
+                    {errors.gender && (
+                      <p className="text-sm text-error">
+                        {errors.gender.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -132,21 +201,36 @@ export default function CreateHealthProfile() {
                     <label className=" label-md text-text-secondary px-xs">
                       Height (cm)
                     </label>
-                    <Input placeholder="e.g. 170" type="number" />
+                    <Input
+                      {...register("height")}
+                      placeholder="e.g. 170"
+                      type="number"
+                      error={errors.height?.message}
+                    />
                   </div>
 
                   <div className="flex flex-col gap-md">
                     <label className=" label-md text-text-secondary px-xs">
                       Weight (kg)
                     </label>
-                    <Input placeholder="e.g. 175" type="number" />
+                    <Input
+                      {...register("weight")}
+                      placeholder="e.g. 175"
+                      type="number"
+                      error={errors.weight?.message}
+                    />
                   </div>
 
                   <div className="flex flex-col gap-md">
                     <label className=" label-md text-text-secondary px-xs">
                       Waist (cm)
                     </label>
-                    <Input placeholder="e.g. 35" type="number" />
+                    <Input
+                      {...register("waist")}
+                      placeholder="e.g. 35"
+                      type="number"
+                      error={errors.waist?.message}
+                    />
                   </div>
                 </div>
               </div>
@@ -164,22 +248,25 @@ export default function CreateHealthProfile() {
                     Activity Level
                   </label>
                   <Select
+                    {...register("activityLevel")}
+                    error={errors.activityLevel?.message}
+                    placeholder={"Select Your Activity Level"}
                     options={[
                       {
                         name: "Sedentary (Office job, little exercise)",
-                        value: "sedentary",
+                        value: 1,
                       },
                       {
                         name: "Lightly Active (1-3 days/week exercise)",
-                        value: "lightly_active",
+                        value: 2,
                       },
                       {
                         name: "Moderately Active (3-5 days/week exercise)",
-                        value: "moderately_active",
+                        value: 3,
                       },
                       {
                         name: "Very Active (6-7 days/week intense sport)",
-                        value: "very_active",
+                        value: 4,
                       },
                     ]}
                   ></Select>
@@ -193,11 +280,17 @@ export default function CreateHealthProfile() {
                   <h3 className=" headline-sm text-text-primary">Allergies</h3>
                 </div>
 
-                <Input placeholder="Peanuts" />
+                <Input
+                  {...register("allergies")}
+                  placeholder="Peanuts"
+                  error={errors.allergies?.message}
+                />
               </div>
               {/* <!-- Primary Action --> */}
               <div className="pt-lg">
-                <Button>Continue to Dashboard</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  Continue to Dashboard
+                </Button>
               </div>
 
               <p className="text-center caption text-text-secondary max-w-100 mx-auto">
