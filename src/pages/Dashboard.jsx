@@ -9,13 +9,21 @@ import { BsStars } from "react-icons/bs";
 import { MdOutlineForum } from "react-icons/md";
 //zustand
 import { authStore } from "../store/auth";
+import { useLocation } from "react-router-dom";
 
 export default function Dashboard() {
   const user = authStore((state) => state.user);
+  const location = useLocation();
+  const successMessage = location.state?.successMessage;
 
   return (
     <>
       <div className="mx-auto max-w-max p-xl">
+        {successMessage && (
+          <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 text-center font-medium mb-3">
+            {successMessage}
+          </div>
+        )}
         {/* <!-- Greeting Header --> */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>

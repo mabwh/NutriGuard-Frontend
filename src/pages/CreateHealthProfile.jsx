@@ -9,11 +9,16 @@ import {
 import Input from "../components/Input";
 import Select from "../components/Select";
 import Button from "../components/Button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { chpSechema } from "../utils/validation";
+import { createHealthProfile } from "../api/createHealthProfile";
+import { useNavigate } from "react-router-dom";
+import BackendErrorMessage from "../components/BackendErrorMessage";
 export default function CreateHealthProfile() {
+  const navigate = useNavigate();
+  const [backendError, setBackendError] = useState("");
   const {
     register,
     handleSubmit,
@@ -54,9 +59,25 @@ export default function CreateHealthProfile() {
   }, [height, weight, setValue]);
 
   //handlers
-  const handleSubmitHealthForm = (data) => {
-    console.log(data);
+  const handleSubmitHealthForm = async (data) => {
     //call api
+    try {
+      const reply = await createHealthProfile(data);
+      console.log("answer of create health", reply);
+      if (reply.isSuccess) {
+        navigate("/dashboard", {
+          state: {
+            successMessage: "Your health profile was created successfully",
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error.response?.data);
+      setBackendError(error.response?.data?.message);
+      if (error.response?.data?.message === "Health profile already exists.") {
+        navigate("/dashboard");
+      }
+    }
   };
   return (
     <>
@@ -123,6 +144,7 @@ export default function CreateHealthProfile() {
               {errors.goal && (
                 <p className="text-sm text-error">{errors.goal?.message}</p>
               )}
+              <BackendErrorMessage message={backendError} />
               {/* <!-- Section 1: Personal Information --> */}
               <div className="space-y-md">
                 <div className="flex items-center gap-sm pb-sm border-b border-surface-container mb-5">
@@ -202,7 +224,7 @@ export default function CreateHealthProfile() {
                       Height (cm)
                     </label>
                     <Input
-                      {...register("height")}
+                      {...register("height", { valueAsNumber: true })}
                       placeholder="e.g. 170"
                       type="number"
                       error={errors.height?.message}
@@ -214,7 +236,7 @@ export default function CreateHealthProfile() {
                       Weight (kg)
                     </label>
                     <Input
-                      {...register("weight")}
+                      {...register("weight", { valueAsNumber: true })}
                       placeholder="e.g. 175"
                       type="number"
                       error={errors.weight?.message}
@@ -226,7 +248,7 @@ export default function CreateHealthProfile() {
                       Waist (cm)
                     </label>
                     <Input
-                      {...register("waist")}
+                      {...register("waist", { valueAsNumber: true })}
                       placeholder="e.g. 35"
                       type="number"
                       error={errors.waist?.message}
