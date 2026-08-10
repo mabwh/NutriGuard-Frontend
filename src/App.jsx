@@ -9,6 +9,7 @@ import CreateHealthProfile from "./pages/CreateHealthProfile";
 import LoggedInlayout from "./layouts/LoggedInlayout";
 import Profile from "./profile/screens/Profile";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
+import AiChat from "./pages/AiChat";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route element={<LoggedInlayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/chat" element={<AiChat/>}/>
           </Route>
         </Route>
 

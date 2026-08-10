@@ -140,7 +140,8 @@ export default function LoggedInlayout() {
               Dashboard
             </span>
           </Link>
-          <button
+          <Link
+            to={"/chat"}
             onClick={() => setIsOpen(false)}
             className={`
     flex
@@ -166,7 +167,7 @@ export default function LoggedInlayout() {
             >
               AI Assistant
             </span>
-          </button>
+          </Link>
           <button
             onClick={() => setIsOpen(false)}
             className={`
