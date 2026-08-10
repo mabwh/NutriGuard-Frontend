@@ -3,10 +3,13 @@ import { MdEdit } from "react-icons/md";
 import { MdAccessibilityNew } from "react-icons/md";
 import Card from '../../components/Card'
 import Button from '../../components/Button'
-import pfp from '../../../public/pfp.svg'
+import pfp from '../../../public/user.jpg'
 import { IoSave } from "react-icons/io5";
+import { authStore } from '../../store/auth';
 
 function ProfileCard({setProfileEdit, profileEdit, triggerSubmit}) {
+  const user = authStore((state) => state.user);
+
   return (
     <>
     <Card className='md:col-span-4 flex flex-col items-center text-center h-full'>
@@ -28,13 +31,13 @@ function ProfileCard({setProfileEdit, profileEdit, triggerSubmit}) {
       {/* Full Name */}
 
       <h2 class="text-2xl font-semibold">
-          Sarah Johnson
+          {user.name}
       </h2>
 
       {/* Email */}
 
       <p class="mb-6">
-          sarah.j@wellness.com
+          {user.email}
         </p>
 
       {/* Edit Profile Button */}
@@ -45,11 +48,19 @@ function ProfileCard({setProfileEdit, profileEdit, triggerSubmit}) {
           triggerSubmit();
         }
       }} 
-      className="w-full py-3 border rounded-md flex items-center justify-center gap-2">
+      className="w-full py-3 border rounded-md flex items-center justify-center gap-2 mb-3">
         {!profileEdit
         ? <><MdAccessibilityNew /> Edit Health Profile</> 
         : <><IoSave/> Save profile updates</> }
       </Button>
+
+      {profileEdit && 
+        <Button onClick={()=>setProfileEdit(!profileEdit)} 
+        className="w-full py-3 border rounded-md flex items-center justify-center gap-2"
+        variant='secondary'>
+          Discard Changes
+        </Button>
+      }
 
     </Card>
     </>

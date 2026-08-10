@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Card from '../../components/Card'
 import { GiBodyHeight } from "react-icons/gi";
 import { MdStraighten } from "react-icons/md";
@@ -7,8 +7,36 @@ import { FaRunning } from "react-icons/fa";
 import { LuTarget } from "react-icons/lu";
 import CardHeader from './CardHeader';
 import { FiActivity } from "react-icons/fi";
+import { getHealthProfile } from '../../api/createHealthProfile';
+import { profileStore } from '../../store/profile'
+
 
 function HealthSummaryCard() {
+
+const setProfile = profileStore((state) => state.setProfile);
+
+  let fetchProfileData = async () => {
+    try{
+      let response = await getHealthProfile();
+      if(response.isSuccess)
+      {
+        setProfile(response.data)
+      }
+    }
+    catch(error)
+    {
+      console.log(error);
+    }
+  }
+
+  useEffect(()=>{
+      fetchProfileData();
+    }, []);
+
+  const profile = profileStore((state) => state.profile);
+  const mapGoal = ['Lose Weight', 'Maintain Weight', 'Gain Weight'];
+  const mapActivity = ['Sedentary', 'Lightly Active', 'Moderately Active', 'Very Active', 'Extremely Active'];
+
   return (
     <Card>
       {/* SummaryHeader & HealthStatCard ×4 */}
@@ -24,25 +52,25 @@ function HealthSummaryCard() {
         variant='HealthStat'
         icon={<LuWeight />} 
         label='Weight'
-        content='70kg'/>
+        content={profile?.weight}/>
         
         <Card
         variant='HealthStat'
         icon={<MdStraighten />} 
         label='Waist'
-        content='75cm'/>
+        content={profile?.waist}/>
 
         <Card
         variant='HealthStat'
         icon={<FaRunning />} 
         label='Activity'
-        content='Moderately Active'/>
+        content={mapActivity[profile?.activityLevel-1]}/>
 
         <Card
         variant='HealthStat'
         icon={<LuTarget />} 
         label='Goal'
-        content='Maintain'/>
+        content={mapGoal[profile?.goal-1]}/>
       </div>
     </Card>
   )
