@@ -9,3 +9,8 @@ export const getHealthProfile = async () => {
     const response = await axiosInstance.get("HealthProfile");
     return response.data;
 };
+
+export const updateHealthProfile = async (newProfileObj) => {
+    const response = await axiosInstance.put("HealthProfile", newProfileObj);
+    return response.data;
+};

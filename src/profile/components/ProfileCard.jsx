@@ -7,62 +7,63 @@ import pfp from '../../../public/user.jpg'
 import { IoSave } from "react-icons/io5";
 import { authStore } from '../../store/auth';
 
-function ProfileCard({setProfileEdit, profileEdit, triggerSubmit}) {
+function ProfileCard({ setProfileEdit, profileEdit, submitRef, isFormValid }) {
   const user = authStore((state) => state.user);
 
   return (
     <>
-    <Card className='md:col-span-4 flex flex-col items-center text-center h-full'>
+      <Card className='md:col-span-4 flex flex-col items-center text-center h-full'>
 
-    {/* Profile Photo */}
-      <div class="relative w-32 h-32 mb-4">
+        {/* Profile Photo */}
+        <div class="relative w-32 h-32 mb-4">
           <img
             class="w-full h-full rounded-full object-cover"
             src={pfp}
           />
-      
-       {/* Photo Edit button */}
 
-      <Button round={true} className="absolute bottom-1 right-1  border">
+          {/* Photo Edit button */}
+
+          <Button round={true} className="absolute bottom-1 right-1  border">
             <MdEdit className="text-headline-sm" />
           </Button>
-      </div>
+        </div>
 
-      {/* Full Name */}
+        {/* Full Name */}
 
-      <h2 class="text-2xl font-semibold">
+        <h2 class="text-2xl font-semibold">
           {user.name}
-      </h2>
+        </h2>
 
-      {/* Email */}
+        {/* Email */}
 
-      <p class="mb-6">
+        <p class="mb-6">
           {user.email}
         </p>
 
-      {/* Edit Profile Button */}
+        {/* Edit Profile Button */}
 
-      <Button onClick={()=>{
-        setProfileEdit(!profileEdit);
-        if(profileEdit){
-          triggerSubmit();
-        }
-      }} 
-      className="w-full py-3 border rounded-md flex items-center justify-center gap-2 mb-3">
-        {!profileEdit
-        ? <><MdAccessibilityNew /> Edit Health Profile</> 
-        : <><IoSave/> Save profile updates</> }
-      </Button>
-
-      {profileEdit && 
-        <Button onClick={()=>setProfileEdit(!profileEdit)} 
-        className="w-full py-3 border rounded-md flex items-center justify-center gap-2"
-        variant='secondary'>
-          Discard Changes
+        <Button onClick={() => {
+          if (profileEdit) {
+            const valid = submitRef.current?.();
+            if (!valid) return;
+          }
+            setProfileEdit(!profileEdit);
+        }}
+          className="w-full py-3 border rounded-md flex items-center justify-center gap-2 mb-3">
+          {!profileEdit
+            ? <><MdAccessibilityNew /> Edit Health Profile</>
+            : <><IoSave /> Save profile updates</>}
         </Button>
-      }
 
-    </Card>
+        {profileEdit &&
+          <Button onClick={() => setProfileEdit(!profileEdit)}
+            className="w-full py-3 border rounded-md flex items-center justify-center gap-2"
+            variant='secondary'>
+            Discard Changes
+          </Button>
+        }
+
+      </Card>
     </>
   )
 }
