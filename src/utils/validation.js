@@ -46,7 +46,7 @@ export const chpSechema = z.object({
 
     activityLevel: z
         .coerce.number({ error: "Please select your activity level" })
-        .refine((value) => [1, 2, 3, 4].includes(value), {
+        .refine((value) => [1, 2, 3, 4, 5].includes(value), {
             message: "Please select your activity level",
         }),
 
