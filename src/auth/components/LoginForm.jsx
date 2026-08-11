@@ -11,6 +11,7 @@ import { loginSchema } from "../utils/validation";
 import { useNavigate } from "react-router-dom";
 //api
 import { login } from "../api/auth";
+import { getHealthProfile } from "../../api/createHealthProfile";
 import { useState } from "react";
 import BackendErrorMessage from "../../components/BackendErrorMessage";
 //zustand
@@ -38,10 +39,16 @@ export default function LoginForm({ successMessage }) {
         //store user in global state
         setAuth(reply);
         //rediredt to dashboard or create health profile
-        if (reply.isProfileCompleted) {
-          navigate("/dashboard");
-        } else {
-          navigate("/create-health-profile");
+        //call another api to know profile exist or not
+        try {
+          const reply = await getHealthProfile();
+          if (reply.isSuccess) {
+            navigate("/dashboard");
+          } else {
+            navigate("/create-health-profile");
+          }
+        } catch (error) {
+          console.log(error.response?.data);
         }
       }
     } catch (error) {
