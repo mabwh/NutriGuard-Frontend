@@ -23,7 +23,7 @@ function ProfilePage() {
   const [profileEdit, setProfileEdit] = useState(false);
   const submitRef = useRef(null);
 
-  const triggerSubmit = () => submitRef.current?.();
+  const triggerSubmit = () => submitRef.current?.fn();
 
   return (
     //Container
@@ -35,7 +35,7 @@ function ProfilePage() {
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             <ProfileCard setProfileEdit = {setProfileEdit}
               profileEdit = {profileEdit}
-              triggerSubmit = {triggerSubmit}
+              submitRef = {submitRef}
             />
             
             {/* Right Column */}
