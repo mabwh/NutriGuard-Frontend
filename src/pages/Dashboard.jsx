@@ -7,18 +7,102 @@ import { IoMdFitness } from "react-icons/io";
 import { LuChartNoAxesCombined } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineForum } from "react-icons/md";
+import { Link, useLocation } from "react-router-dom";
+import { calculateNutritionNeeds } from "../utils/nutritionCalculations";
 //zustand
 import { authStore } from "../store/auth";
-import { useLocation } from "react-router-dom";
+import { profileStore } from "../store/profile";
 
 export default function Dashboard() {
   const user = authStore((state) => state.user);
   const location = useLocation();
   const successMessage = location.state?.successMessage;
+  const profile = profileStore((state) => state.profile);
+  //console.log("health profile", profile);
+  const goalUiKit = {
+    LoseWeight: {
+      bg: "bg-error",
+      text: "text-error",
+      label: "Over Weight",
+      description: `Your current BMI is above the healthy range`,
+    },
 
+    MaintainWeight: {
+      bg: "bg-success",
+      text: "text-success",
+      label: "Maintain Weight",
+      description: "Your current BMI is within the healthy range.",
+    },
+
+    GainWeight: {
+      bg: "bg-warning",
+      text: "text-warning",
+      label: "Gain Weight",
+      description: "Your current BMI is below the healthy range.",
+    },
+  };
+  const currentGoal = goalUiKit[profile?.goal];
+
+  const height = profile?.height;
+  const weight = profile?.weight;
+  let bmi = 0;
+  if (height > 0 && weight > 0) {
+    const heightInMeters = height / 100;
+    bmi = weight / (heightInMeters * heightInMeters);
+  }
+  const whtr = profile?.waist / height;
+  const getHealthRisk = (bmi, whtr) => {
+    // High
+    if (bmi >= 30 || whtr >= 0.6) {
+      return {
+        level: "High Risk",
+        description:
+          "Your measurements indicate increased health risk. Consider speaking with a healthcare professional.",
+        segments: 3,
+      };
+    }
+
+    // Moderate
+    if (bmi >= 25 || whtr >= 0.5) {
+      return {
+        level: "Moderate Risk",
+        description:
+          "Your measurements indicate some increased health risk. Maintaining a healthy weight and waist size can help.",
+        segments: 2,
+      };
+    }
+
+    // Low
+    return {
+      level: "Low Risk",
+      description:
+        "Your BMI and waist-to-height ratio are currently within the healthy screening range.",
+      segments: 1,
+    };
+  };
+
+  const healthRisk = getHealthRisk(bmi, whtr);
+  //for ui
+  const riskColors = {
+    "Low Risk": {
+      bg: "bg-success",
+      text: "text-success",
+    },
+    "Moderate Risk": {
+      bg: "bg-warning",
+      text: "text-warning",
+    },
+    "High Risk": {
+      bg: "bg-error",
+      text: "text-error",
+    },
+  };
+  const currentRiskColors = riskColors[healthRisk.level];
+
+  const nutrition = calculateNutritionNeeds(profile);
   return (
     <>
-      <div className="mx-auto max-w-max p-xl">
+      <div className="mx-auto max-w-max p-md md:p-xl">
         {successMessage && (
           <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 text-center font-medium mb-3">
             {successMessage}
@@ -34,11 +118,16 @@ export default function Dashboard() {
               Here's how your health journey looks today
             </p>
           </div>
-          <div className="flex items-center gap-2 bg-surface p-2 rounded-md border border-border card-shadow">
+          <div className="flex items-center self-start gap-2 bg-surface p-2 rounded-md border border-border card-shadow">
             <MdOutlineCalendarMonth size={22} className=" text-primary" />
 
             <span className="label-md text-text-on-surface">
-              Monday, October 26
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </span>
           </div>
         </div>
@@ -60,9 +149,9 @@ export default function Dashboard() {
                 </p>
               </div>
               <div className="mt-8">
-                <button className="bg-white text-primary px-6 py-3 rounded-md button-text hover:bg-white/90 transition-all">
+                {/* <button className="bg-white text-primary px-6 py-3 rounded-md button-text hover:bg-white/90 transition-all">
                   View Progress
-                </button>
+                </button> */}
               </div>
             </div>
             {/* <!-- Decorative Background Element --> */}
@@ -76,116 +165,130 @@ export default function Dashboard() {
           {/* <!-- Health Summary Cards (Right Column) --> */}
           <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
             <div className="bg-surface p-6 rounded-3xl border border-border card-shadow flex flex-col gap-4">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-center">
                 <span className="text-text-secondary label-md">
                   Weight Status
                 </span>
 
-                <LuChartNoAxesCombined size={25} className="text-warning" />
+                <LuChartNoAxesCombined
+                  size={25}
+                  className={currentGoal?.text}
+                />
               </div>
               <div>
-                <p className="headline-sm text-text-on-surface">Overweight</p>
-                <p className="text-[14px] text-text-secondary mt-1">
-                  BMI: 26.4 (Current: 72kg)
+                <p className={`headline-sm ${currentGoal?.text}`}>
+                  {`${currentGoal?.label}`}
                 </p>
-              </div>
-              <div className="w-full bg-surface-container rounded-full h-2">
-                <div className="bg-warning h-2 rounded-full w-[65%]"></div>
+                <p className="text-[14px] text-text-secondary mt-1">
+                  BMI: {bmi.toFixed(2)} (Current: {profile?.weight}kg)
+                </p>
+                <p className={`text-[14px] text-text-secondary mt-1`}>
+                  {currentGoal?.description}
+                </p>
               </div>
             </div>
             <div className="bg-surface p-6 rounded-3xl border border-border card-shadow flex flex-col gap-4">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-center">
                 <span className="text-text-secondary label-md">
                   Health Risk
                 </span>
-                <MdOutlineVerifiedUser size={25} className="text-success" />
+                <MdOutlineVerifiedUser
+                  size={25}
+                  className={currentRiskColors.text}
+                />
               </div>
               <div>
-                <p className="headline-sm text-text-on-surface">Low Risk</p>
+                <p className="headline-sm text-text-on-surface">
+                  {healthRisk.level}
+                </p>
                 <p className="text-[14px] text-text-secondary mt-1">
-                  Metabolic markers are optimal
+                  {healthRisk.description}
                 </p>
               </div>
               <div className="flex gap-1">
-                <div className="h-2 w-1/3 bg-success rounded-full"></div>
-                <div className="h-2 w-1/3 bg-surface-container rounded-full"></div>
-                <div className="h-2 w-1/3 bg-surface-container rounded-full"></div>
+                {[1, 2, 3].map((segment) => (
+                  <div
+                    key={segment}
+                    className={`h-2 w-1/3 rounded-full ${
+                      segment <= healthRisk.segments
+                        ? currentRiskColors.bg
+                        : "bg-surface-container"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </div>
 
           {/* <!-- Daily Nutrition Overview --> */}
           <div className="col-span-12 lg:col-span-8 bg-surface p-8 rounded-3xl border border-border  card-shadow">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
               <h3 className=" headline-sm text-text-on-surface">
-                Daily Nutrition Overview
+                Daily Nutrition Needs
               </h3>
-              <button className="text-primary label-md hover:underline">
-                Edit Goals
-              </button>
+              <span className="text-xs text-primary bg-success/10 px-3 py-1 rounded-full font-semibold">
+                ✦ {"  "} Personalized
+              </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-              {/* <!-- Left Column (Macros) --> */}
+            <div className="grid grid-cols-1 md:gap-x-12 gap-y-4">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between label-md">
                     <span className="text-text-on-surface">Calories</span>
                     <span className="text-text-secondary">
-                      1,650 / 2,100 kcal
+                      {Math.round(nutrition?.calories)} kcal
                     </span>
-                  </div>
-                  <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full rounded-full transition-all duration-1000 w-[78%]"></div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between label-md">
                     <span className="text-text-on-surface">Protein</span>
-                    <span className="text-text-secondary">95g / 140g</span>
-                  </div>
-                  <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden">
-                    <div className="bg-status-info h-full rounded-full transition-all duration-1000 w-[68%]"></div>
+                    <span className="text-text-secondary">
+                      {Math.round(nutrition?.protein)}g
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between   label-md">
                     <span className="text-text-on-surface">Carbs</span>
-                    <span className="text-text-secondary">180g / 220g</span>
-                  </div>
-                  <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden">
-                    <div className="bg-warning h-full rounded-full transition-all duration-1000 w-[82%]"></div>
+                    <span className="text-text-secondary">
+                      {Math.round(nutrition?.carbs)}g
+                    </span>
                   </div>
                 </div>
-              </div>
-              {/* <!-- Right Column (Extras) --> */}
-              <div className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between   label-md">
                     <span className="text-text-on-surface">Fat</span>
-                    <span className="text-text-secondary">45g / 65g</span>
-                  </div>
-                  <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden">
-                    <div className="bg-secondary-fixed-dim h-full rounded-full transition-all duration-1000 w-[70%]"></div>
+                    <span className="text-text-secondary">
+                      {Math.round(nutrition?.fat)}g
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between   label-md">
                     <span className="text-text-on-surface">Fiber</span>
-                    <span className="text-text-secondary">22g / 30g</span>
-                  </div>
-                  <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden">
-                    <div className="bg-primary-container h-full rounded-full transition-all duration-1000 w-[73%]"></div>
+                    <span className="text-text-secondary">
+                      {" "}
+                      {Math.round(nutrition?.fiber)}g
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between   label-md">
                     <span className="text-text-on-surface">Water</span>
-                    <span className="text-text-secondary">2.1L / 3L</span>
-                  </div>
-                  <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden">
-                    <div className="bg-info h-full rounded-full transition-all duration-1000 w-[70%]"></div>
+                    <span className="text-text-secondary">
+                      {nutrition?.water.toFixed(1)}L
+                    </span>
                   </div>
                 </div>
+              </div>
+              <div className="col-span-2">
+                <p className="text-[15px] text-text-secondary leading-6 mt-4">
+                  Your daily nutrition targets are personalized based on your
+                  health profile, activity level, and current goal. These values
+                  are estimates to help you plan balanced meals throughout the
+                  day.
+                </p>
               </div>
             </div>
           </div>
@@ -202,10 +305,13 @@ export default function Dashboard() {
                 Got questions about your dinner? Ask our AI Assistant for
                 healthy swaps or calorie estimation
               </p>
-              <button className="w-full bg-primary/10 text-text-on-surface px-8 py-4 rounded-2xl button-text  shadow-lg shadow-secondary/20 flex items-center justify-center gap-3 transition-transform hover:scale-95">
+              <Link
+                to={"/chat"}
+                className="w-full bg-primary/10 text-text-on-surface px-8 py-4 rounded-2xl button-text  shadow-lg shadow-secondary/20 flex items-center justify-center gap-3 transition-transform hover:scale-95"
+              >
                 <MdOutlineForum size={50} className="fill-primary " />
                 Chat with AI Assistant
-              </button>
+              </Link>
             </div>
           </div>
         </div>

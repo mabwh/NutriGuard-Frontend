@@ -205,3 +205,18 @@ body {
 .card-shadow {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
 }
+/*******************************/
+.meal-timeline-connector::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 40px;
+  bottom: -40px;
+  width: 2px;
+  background: #e2e8f0;
+  z-index: 0;
+}
+
+.meal-timeline-item:last-child .meal-timeline-connector::before {
+  display: none;
+}

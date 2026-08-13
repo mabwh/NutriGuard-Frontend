@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
 import { IoMdSearch, IoMdNotificationsOutline } from "react-icons/io";
 import { MdDashboard } from "react-icons/md";
@@ -25,13 +25,13 @@ export default function LoggedInlayout() {
     <>
       <header className="w-full  fixed top-0 left-0  z-50   bg-surface  border-b border-border  shadow-sm ">
         <div className="px-md md:px-lg h-(--top-nav-height) flex justify-between items-center mx-auto max-w-max">
-          <Link to="/" className="hidden md:block">
+          <NavLink to="/" className="hidden md:block">
             <img
               src="/logo_with_a_solid_white-removebg-preview.png"
               className="h-10 object-cover"
               alt=""
             />
-          </Link>
+          </NavLink>
           <button
             type="button"
             onClick={() => setIsOpen(true)}
@@ -108,9 +108,9 @@ export default function LoggedInlayout() {
         </button>
 
         <nav className=" flex flex-col gap-1 text-text-on-surface">
-          <Link
+          <NavLink
             to={"/dashboard"}
-            className={`
+            className={({ isActive }) => `
     flex
     items-center
     rounded-xl
@@ -120,8 +120,7 @@ export default function LoggedInlayout() {
     duration-200
 
     ${collapsed ? "justify-center" : "gap-3 hover:translate-x-1"}
- bg-primary/5
-   
+     ${isActive ? "bg-primary/5 " : ""}
   `}
             onClick={() => setIsOpen(false)}
           >
@@ -139,11 +138,11 @@ export default function LoggedInlayout() {
             >
               Dashboard
             </span>
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to={"/chat"}
             onClick={() => setIsOpen(false)}
-            className={`
+            className={({ isActive }) => `
     flex
     items-center
     rounded-xl
@@ -151,7 +150,9 @@ export default function LoggedInlayout() {
     py-3
     transition-all
     duration-200
+
     ${collapsed ? "justify-center" : "gap-3 hover:translate-x-1"}
+     ${isActive ? "bg-primary/5 " : ""}
   `}
           >
             <BsStars size={22} className="fill-primary shrink-0" />
@@ -167,10 +168,11 @@ export default function LoggedInlayout() {
             >
               AI Assistant
             </span>
-          </Link>
-          <button
+          </NavLink>
+          <NavLink
+            to={"/meals"}
             onClick={() => setIsOpen(false)}
-            className={`
+            className={({ isActive }) => `
     flex
     items-center
     rounded-xl
@@ -178,7 +180,9 @@ export default function LoggedInlayout() {
     py-3
     transition-all
     duration-200
+
     ${collapsed ? "justify-center" : "gap-3 hover:translate-x-1"}
+     ${isActive ? "bg-primary/5 " : ""}
   `}
           >
             <CiCalendar size={22} className="fill-primary shrink-0" />
@@ -194,11 +198,11 @@ export default function LoggedInlayout() {
             >
               Daily Plan
             </span>
-          </button>
-          <Link
+          </NavLink>
+          <NavLink
             to={"/profile"}
             onClick={() => setIsOpen(false)}
-            className={`
+            className={({ isActive }) => `
     flex
     items-center
     rounded-xl
@@ -206,7 +210,9 @@ export default function LoggedInlayout() {
     py-3
     transition-all
     duration-200
+
     ${collapsed ? "justify-center" : "gap-3 hover:translate-x-1"}
+     ${isActive ? "bg-primary/5 " : ""}
   `}
           >
             <IoPersonOutline
@@ -225,10 +231,11 @@ export default function LoggedInlayout() {
             >
               My Profile
             </span>
-          </Link>
-          <button
+          </NavLink>
+          <NavLink
+            to={"/settings"}
             onClick={() => setIsOpen(false)}
-            className={`
+            className={({ isActive }) => `
     flex
     items-center
     rounded-xl
@@ -236,7 +243,9 @@ export default function LoggedInlayout() {
     py-3
     transition-all
     duration-200
+
     ${collapsed ? "justify-center" : "gap-3 hover:translate-x-1"}
+     ${isActive ? "bg-primary/5 " : ""}
   `}
           >
             <IoSettingsOutline
@@ -255,7 +264,7 @@ export default function LoggedInlayout() {
             >
               Settings
             </span>
-          </button>
+          </NavLink>
         </nav>
       </aside>
       <main

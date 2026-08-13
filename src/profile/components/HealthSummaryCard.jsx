@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react'
 import Card from '../../components/Card'
 import { GiBodyHeight } from "react-icons/gi";
 import { MdStraighten } from "react-icons/md";
@@ -7,31 +6,10 @@ import { FaRunning } from "react-icons/fa";
 import { LuTarget } from "react-icons/lu";
 import CardHeader from './CardHeader';
 import { FiActivity } from "react-icons/fi";
-import { getHealthProfile } from '../../api/createHealthProfile';
 import { profileStore } from '../../store/profile'
 
 
 function HealthSummaryCard() {
-
-const setProfile = profileStore((state) => state.setProfile);
-
-  let fetchProfileData = async () => {
-    try{
-      let response = await getHealthProfile();
-      if(response.isSuccess)
-      {
-        setProfile(response.data)
-      }
-    }
-    catch(error)
-    {
-      console.log(error);
-    }
-  }
-
-  useEffect(()=>{
-      fetchProfileData();
-    }, []);
 
   const profile = profileStore((state) => state.profile);
   const mapGoal = ['Lose Weight', 'Maintain Weight', 'Gain Weight'];
