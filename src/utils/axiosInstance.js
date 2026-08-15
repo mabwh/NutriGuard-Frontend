@@ -1,7 +1,7 @@
 import axios from "axios";
 import { authStore } from "../store/auth";
 
-const API_URL = "http://nutriguard.runasp.net/api/";
+const API_URL = "https://nutriguard.runasp.net/api/";
 
 const axiosInstance = axios.create({
     baseURL: API_URL,

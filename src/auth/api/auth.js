@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = "http://nutriguard.runasp.net/api/Auth/";
+const API_URL = "https://nutriguard.runasp.net/api/Auth/";
 
 export const login = async (email, password) => {
     const response = await axios.post(`${API_URL}login`, { email, password });
