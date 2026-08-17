@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { GiDrop } from "react-icons/gi";
 import { IoIosFitness } from "react-icons/io";
 import {
@@ -5,15 +6,79 @@ import {
   MdOutlineLocalFireDepartment,
   MdOutlineSchedule,
 } from "react-icons/md";
+import { getCustomMealsByDate } from "../api/customMeals";
+import BackendErrorMessage from "../components/BackendErrorMessage";
 
 export default function DailyMeals() {
+  // NEW CODE:
+  // Daily Meals already displays the current local date, so this is the matching Backend date.
+  const displayedDate = new Date();
+  const formattedDate = [
+    displayedDate.getFullYear(),
+    String(displayedDate.getMonth() + 1).padStart(2, "0"),
+    String(displayedDate.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  const [meals, setMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [backendError, setBackendError] = useState("");
+  // OLD CODE - kept intentionally for safety. The static mock timeline is disabled.
+  const [showStaticMockMeals] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadCustomMeals = async () => {
+      try {
+        setIsLoading(true);
+        setBackendError("");
+        const response = await getCustomMealsByDate(formattedDate);
+
+        if (!response.isSuccess) {
+          if (isMounted) {
+            setBackendError(response.message);
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setMeals(response.data);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setBackendError(error.response?.data?.message || "Unable to load daily meals.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadCustomMeals();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [formattedDate]);
+
+  const dailyNutrition = meals.reduce(
+    (totals, meal) => ({
+      calories: totals.calories + meal.energyKcal,
+      protein: totals.protein + meal.proteinG,
+      carbohydrates: totals.carbohydrates + meal.carbohydrateG,
+      fat: totals.fat + meal.fatG,
+    }),
+    { calories: 0, protein: 0, carbohydrates: 0, fat: 0 },
+  );
+
   return (
     <>
       {/* <!-- Header Section --> */}
       <div className="flex flex-col-reverse md:flex-row justify-between gap-md mb-xl">
         <h1 className="headline-lg text-text-primary">Today's Meal Plan</h1>
         <p className="body-lg text-text-secondary ">
-          {new Date().toLocaleDateString("en-US", {
+          {displayedDate.toLocaleDateString("en-US", {
             weekday: "long",
             day: "numeric",
             month: "short",
@@ -29,7 +94,10 @@ export default function DailyMeals() {
             Calories
           </span>
           <span className="text-headline-md font-bold">
-            1,840 <span className="text-caption text-text-secondary">g</span>
+            {/* OLD CODE - kept intentionally for safety. */}
+            {/* 1,840 <span className="text-caption text-text-secondary">g</span> */}
+            {/* NEW CODE: Backend energyKcal total for the displayed date. */}
+            {dailyNutrition.calories} <span className="text-caption text-text-secondary">kcal</span>
           </span>
         </div>
 
@@ -39,7 +107,10 @@ export default function DailyMeals() {
             Protein
           </span>
           <span className="text-headline-md font-bold">
-            1,840 <span className="text-caption text-text-secondary">g</span>
+            {/* OLD CODE - kept intentionally for safety. */}
+            {/* 1,840 <span className="text-caption text-text-secondary">g</span> */}
+            {/* NEW CODE: Backend proteinG total for the displayed date. */}
+            {dailyNutrition.protein} <span className="text-caption text-text-secondary">g</span>
           </span>
         </div>
 
@@ -49,7 +120,10 @@ export default function DailyMeals() {
             Carbs
           </span>
           <span className="text-headline-md font-bold">
-            1,840 <span className="text-caption text-text-secondary">g</span>
+            {/* OLD CODE - kept intentionally for safety. */}
+            {/* 1,840 <span className="text-caption text-text-secondary">g</span> */}
+            {/* NEW CODE: Backend carbohydrateG total for the displayed date. */}
+            {dailyNutrition.carbohydrates} <span className="text-caption text-text-secondary">g</span>
           </span>
         </div>
         <div className="bg-surface p-xl rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.08)] border border-border flex flex-col gap-3">
@@ -58,12 +132,17 @@ export default function DailyMeals() {
             Fats
           </span>
           <span className="text-headline-md font-bold">
-            1,840 <span className="text-caption text-text-secondary">g</span>
+            {/* OLD CODE - kept intentionally for safety. */}
+            {/* 1,840 <span className="text-caption text-text-secondary">g</span> */}
+            {/* NEW CODE: Backend fatG total for the displayed date. */}
+            {dailyNutrition.fat} <span className="text-caption text-text-secondary">g</span>
           </span>
         </div>
       </div>
 
       {/* <!-- Meal Timeline --> */}
+      {/* OLD CODE - kept intentionally for safety. The static mock timeline is no longer rendered. */}
+      {showStaticMockMeals && (
       <div className="relative space-y-xl">
         {/* <!-- Breakfast Card --> */}
         <div className="meal-timeline-item relative flex flex-col md:flex-row gap-lg items-start z-50">
@@ -293,6 +372,64 @@ export default function DailyMeals() {
             </div>
           </div>
         </div>
+      </div>
+      )}
+
+      {/* NEW CODE: Render the Backend-persisted confirmed meals for the displayed date. */}
+      <div className="relative space-y-xl">
+        <BackendErrorMessage message={backendError} />
+
+        {isLoading && (
+          <p className="body-lg text-text-secondary">Loading daily meals...</p>
+        )}
+
+        {!isLoading && !backendError && meals.length === 0 && (
+          <p className="body-lg text-text-secondary">
+            No confirmed meals for this date yet.
+          </p>
+        )}
+
+        {!isLoading && !backendError && meals.map((meal, index) => (
+          <div
+            key={meal.id}
+            className="meal-timeline-item relative flex flex-col md:flex-row gap-lg items-start z-50"
+          >
+            <div className="meal-timeline-connector flex flex-col items-center">
+              <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold z-10 shadow-lg">
+                {String(index + 1).padStart(2, "0")}
+              </div>
+            </div>
+            <div className="flex-1 z-50 w-full bg-surface rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.08)] border border-border flex flex-col transition-all duration-300 hover:shadow-[0px_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1">
+              <div className="flex-1 p-xl flex flex-col justify-between">
+                <div className="flex justify-between items-start gap-md">
+                  <div>
+                    <span className="caption text-primary font-bold uppercase tracking-widest mb-xs block">
+                      {meal.mealType}
+                    </span>
+                    <h3 className="headline-sm text-text-primary mb-sm">{meal.name}</h3>
+                    <p className="body-md text-text-secondary">
+                      {meal.servings} serving{meal.servings === 1 ? "" : "s"} - {meal.source}
+                    </p>
+                    <p className="mt-xs text-sm text-text-secondary">
+                      Meal ID: {meal.id} - Date: {meal.date} - Created: {meal.createdAt}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-headline-sm font-bold text-primary">
+                      {meal.energyKcal}
+                    </span>
+                    <span className="caption text-text-secondary block">Calories</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-md mt-xl pt-xl border-t border-border text-sm text-text-secondary">
+                  <span>{meal.proteinG} g protein</span>
+                  <span>{meal.carbohydrateG} g carbs</span>
+                  <span>{meal.fatG} g fat</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );

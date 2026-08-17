@@ -15,7 +15,13 @@ export default function ProfileLoader() {
           setProfile(response.data);
         }
       } catch (error) {
-        console.log(error.response?.data);
+        // OLD CODE - kept intentionally for safety.
+        // console.log(error.response?.data);
+
+        // NEW CODE:
+        // The Backend Axios interceptor clears rejected refresh-token auth state.
+        // ProtectedRoutes then redirects the user to login without logging expected auth failures.
+        void error;
       }
     };
 

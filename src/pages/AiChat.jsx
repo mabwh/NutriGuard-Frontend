@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Textarea from "../components/Textarea";
 import Message from "../components/Message";
+import ConfirmationModal from "../components/ConfirmationModal";
 import { IoMdAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
 import { sendMessageToAI } from "../api/aiChat";
@@ -13,6 +14,12 @@ export default function AiChat() {
   const [message, setMessage] = useState("");
   //for conversation history
   const [messages, setMessages] = useState([]);
+  // NEW CODE:
+  // This stores the AI context separately from display-only message history.
+  const [conversationContext, setConversationContext] = useState(null);
+  // NEW CODE:
+  // This keeps the AI-provided meal confirmation data for the confirmation UI.
+  const [confirmationData, setConfirmationData] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +28,12 @@ export default function AiChat() {
   //handlers
   const handleSendMessage = async () => {
     //If the user hasn't actually typed anything meaningful, STOP.
-    if (!message.trim()) return;
+    // OLD CODE - kept intentionally for safety.
+    // if (!message.trim()) return;
+
+    // NEW CODE:
+    // Loading is checked here as well as on the button to prevent duplicate requests.
+    if (!message.trim() || isLoading) return;
 
     const userMessage = {
       sender: "user",
@@ -33,13 +45,33 @@ export default function AiChat() {
 
     try {
       setIsLoading(true);
-      const data = await sendMessageToAI(message, "en");
+      // OLD CODE - kept intentionally for safety.
+      // const data = await sendMessageToAI(message, "en");
+
+      // NEW CODE:
+      // Context is returned to the AI unchanged to continue its conversation state.
+      const data = await sendMessageToAI(message, "en", conversationContext);
 
       console.log("ai response\n", data);
 
+      // NEW CODE:
+      // Keep the response status and replace context only with the exact AI response value.
+      const aiResult = data.result;
+      const aiStatus = aiResult.status;
+      // OLD CODE - kept intentionally for safety.
+      // setConversationContext(aiResult.data.conversationContext);
+
+      // NEW CODE:
+      // The returned context remains opaque and is also used to identify the confirmation stage.
+      setConversationContext(aiResult.data.conversationContext);
+      if (aiResult.data.intent === "meal_selection_confirmation") {
+        setConfirmationData(aiResult.data);
+      }
+
       const aiMessage = {
         sender: "ai",
-        text: data.result.message,
+        text: aiResult.message,
+        status: aiStatus,
         timestamp: new Date(),
       };
 
@@ -56,6 +88,59 @@ export default function AiChat() {
     setMessage("");
   };
 
+  // NEW CODE:
+  // A new chat clears only the UI history and AI conversation state, never authentication.
+  const handleNewConversation = () => {
+    setMessages([]);
+    setConversationContext(null);
+    setMessage("");
+    setConfirmationData(null);
+  };
+
+  // NEW CODE:
+  // Meal confirmation is sent through the existing AI chat endpoint with the opaque context.
+  const handleConfirmSelection = async () => {
+    if (isLoading || !confirmationData) return;
+
+    const confirmationMessage = "Confirm";
+    const userMessage = {
+      sender: "user",
+      text: confirmationMessage,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    try {
+      setIsLoading(true);
+      const data = await sendMessageToAI(
+        confirmationMessage,
+        "en",
+        conversationContext,
+      );
+      const aiResult = data.result;
+
+      if (aiResult.data?.conversationContext !== undefined) {
+        setConversationContext(aiResult.data.conversationContext);
+      }
+
+      const aiMessage = {
+        sender: "ai",
+        text: aiResult.message,
+        status: aiResult.status,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, aiMessage]);
+      setConfirmationData(null);
+    } catch (error) {
+      console.log(error.response?.data);
+      console.log("AI confirmation error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   //use Effects
   useEffect(() => {
     if (chatViewportRef.current) {
@@ -69,6 +154,15 @@ export default function AiChat() {
   return (
     <>
       <main className=" flex flex-col min-h-[80vh]">
+        <ConfirmationModal
+          isOpen={confirmationData !== null}
+          selections={confirmationData?.selections || []}
+          totalNutritionSnapshot={confirmationData?.totalNutritionSnapshot || {}}
+          language="en"
+          isLoading={isLoading}
+          onConfirm={handleConfirmSelection}
+          onCancel={() => setConfirmationData(null)}
+        />
         {/* Chat Container  */}
         <div
           ref={chatViewportRef}
@@ -119,6 +213,14 @@ export default function AiChat() {
         <div className="relative z-20 px-xl pb-xl pt-lg mt-lg  border-t border-border/50">
           {/* Input Area  */}
           <div className="max-w-4xl mx-auto flex items-end gap-md">
+            <button
+              onClick={handleNewConversation}
+              disabled={isLoading}
+              className="h-12 px-md flex items-center justify-center border border-border text-text-secondary rounded-2xl hover:text-primary hover:border-primary/50 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              type="button"
+            >
+              New Chat
+            </button>
             <div className="flex-1 relative">
               <Textarea
                 value={message}
@@ -135,8 +237,10 @@ export default function AiChat() {
             </div>
             <button
               onClick={handleSendMessage}
+              disabled={isLoading}
               className="h-12 w-12 flex items-center justify-center bg-primary text-white rounded-2xl shadow-md hover:bg-primary/90 transition-all active:scale-95 group"
               id="send-button"
+              type="button"
             >
               <IoSend
                 size={22}

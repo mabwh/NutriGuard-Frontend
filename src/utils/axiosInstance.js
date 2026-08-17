@@ -54,6 +54,12 @@ axiosInstance.interceptors.response.use(
                 const data = response.data;
 
                 if (!data.isSuccess) {
+                    // OLD CODE - kept intentionally for safety.
+                    // return Promise.reject(error);
+
+                    // NEW CODE:
+                    // A rejected refresh token cannot authenticate future protected requests.
+                    authStore.getState().clearAuth();
                     return Promise.reject(error);
                 }
 
@@ -66,6 +72,11 @@ axiosInstance.interceptors.response.use(
                 // Try the original request again
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
+                // NEW CODE:
+                // Clear only an explicitly rejected refresh response; keep auth on network failures.
+                if (refreshError.response?.data?.isSuccess === false) {
+                    authStore.getState().clearAuth();
+                }
                 return Promise.reject(refreshError);
             }
         }
