@@ -276,7 +276,9 @@ export default function LoggedInlayout() {
     ${collapsed ? "md:ml-20" : "md:ml-(--sidebar-width)"}
   `}
       >
-        <Outlet />
+        <div className="mx-auto max-w-max p-md md:p-xl">
+          <Outlet />
+        </div>
       </main>
     </>
   );

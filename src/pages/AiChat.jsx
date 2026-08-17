@@ -8,7 +8,7 @@ export default function AiChat() {
       <main className="h-full relative overflow-hidden flex flex-col">
         {/* Header Content  */}
 
-        <div className=" relative z-10 px-md md:px-xl pt-xl pb-lg flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-border/50 ">
+        <div className=" relative z-10  pb-lg flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-border/50 ">
           <div>
             <h1 className="headline-lg text-text-primary mb-xs">
               AI Assistant
@@ -27,10 +27,7 @@ export default function AiChat() {
         </div>
 
         {/* Chat Container  */}
-        <div
-          className=" relative z-10 px-md md:px-xl py-lg space-y-xl"
-          id="chat-viewport"
-        >
+        <div className=" relative z-10  py-lg space-y-xl" id="chat-viewport">
           {/* System Message / Intro  */}
           <div className="flex justify-center">
             <div className="bg-primary/10 px-lg py-sm rounded-full caption  text-text-secondary border border-border/30">
