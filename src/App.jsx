@@ -14,6 +14,7 @@ import ProfileLoader from "./utils/ProfileLoader";
 import DailyMeals from "./pages/DailyMeals";
 import NotFound from "./pages/NotFound";
 import Settings from "./profile/screens/Settings";
+import MealDetails from "./pages/MealDetails";
 
 export default function App() {
   return (
@@ -32,6 +33,8 @@ export default function App() {
               <Route path="/chat" element={<AiChat />} />
               <Route path="/meals" element={<DailyMeals />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/meal-details" element={<MealDetails />} />
+
 
 
             </Route>
