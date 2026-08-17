@@ -41,16 +41,22 @@ export default function Dashboard() {
       description: "Your current BMI is below the healthy range.",
     },
   };
-  const currentGoal = goalUiKit[profile?.goal];
 
-  const height = profile?.height;
-  const weight = profile?.weight;
+  const height = profile?.height ?? 0;
+  const weight = profile?.weight ?? 0;
   let bmi = 0;
   if (height > 0 && weight > 0) {
     const heightInMeters = height / 100;
     bmi = weight / (heightInMeters * heightInMeters);
   }
-  const whtr = profile?.waist / height;
+  const whtr = height > 0 ? (profile?.waist ?? 0) / height : 0;
+
+  const currentGoal =
+    bmi >= 25
+      ? goalUiKit.LoseWeight
+      : bmi >= 18.5
+        ? goalUiKit.MaintainWeight
+        : goalUiKit.GainWeight;
   const getHealthRisk = (bmi, whtr) => {
     // High
     if (bmi >= 30 || whtr >= 0.6) {

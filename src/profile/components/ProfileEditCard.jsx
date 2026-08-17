@@ -22,6 +22,7 @@ function ProfileEdit({ registerSubmit, setisFormValid }) {
   const [errors, setErrors] = useState({});
 
   const profile = profileStore((state) => state.profile);
+  // const setProfile = profileStore((state) => state.setProfile);
 
   useEffect(() => {
     setFormValues({
@@ -92,16 +93,20 @@ function ProfileEdit({ registerSubmit, setisFormValid }) {
 
     const formObj = validation.values;
 
-    const updateProfile = async (profileData) => {
+    const updateProfile = async () => {
       try {
         const response = await updateHealthProfile(profileData);
-        console.log(response);
+        // console.log(response);
+        if(response.isSuccess)
+        {
+          profileStore
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
-    updateProfile(formObj);
+    updateProfile();
     return true;
   };
 
