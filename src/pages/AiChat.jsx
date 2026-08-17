@@ -1,142 +1,128 @@
+import { useEffect, useRef, useState } from "react";
 import Textarea from "../components/Textarea";
+import Message from "../components/Message";
 import { IoMdAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
+import { sendMessageToAI } from "../api/aiChat";
+import { authStore } from "../store/auth";
 
 export default function AiChat() {
+  const user = authStore((state) => state.user);
+
+  //for current user message in textarea
+  const [message, setMessage] = useState("");
+  //for conversation history
+  const [messages, setMessages] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const chatViewportRef = useRef(null);
+
+  //handlers
+  const handleSendMessage = async () => {
+    //If the user hasn't actually typed anything meaningful, STOP.
+    if (!message.trim()) return;
+
+    const userMessage = {
+      sender: "user",
+      text: message,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    try {
+      setIsLoading(true);
+      const data = await sendMessageToAI(message, "en");
+
+      console.log("ai response\n", data);
+
+      const aiMessage = {
+        sender: "ai",
+        text: data.result.message,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, aiMessage]);
+
+      console.log("my array of history\n", messages);
+    } catch (error) {
+      console.log(error.response?.data);
+      console.log("AI chat error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+    //clear the textarea
+    setMessage("");
+  };
+
+  //use Effects
+  useEffect(() => {
+    if (chatViewportRef.current) {
+      chatViewportRef.current.scrollTo({
+        top: chatViewportRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages, isLoading]);
+
   return (
     <>
-      <main className="h-full relative overflow-hidden flex flex-col">
-        {/* Header Content  */}
-
-        <div className=" relative z-10  pb-lg flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-border/50 ">
-          <div>
-            <h1 className="headline-lg text-text-primary mb-xs">
-              AI Assistant
-            </h1>
-            <p className="text-text-secondary body-lg max-w-128">
-              Ask anything about nutrition, meals, or healthy eating. I'm here
-              to support your journey.
-            </p>
-          </div>
-          <div className="flex items-center gap-base">
-            <span className="flex h-2 w-2 rounded-full bg-success"></span>
-            <span className="label-md text-text-secondary">
-              AI Assistant is online
-            </span>
-          </div>
-        </div>
-
+      <main className=" flex flex-col min-h-[80vh]">
         {/* Chat Container  */}
-        <div className=" relative z-10  py-lg space-y-xl" id="chat-viewport">
-          {/* System Message / Intro  */}
-          <div className="flex justify-center">
-            <div className="bg-primary/10 px-lg py-sm rounded-full caption  text-text-secondary border border-border/30">
-              Mon 10 Aug 2026
+        <div
+          ref={chatViewportRef}
+          id="chat-viewport"
+          className="relative z-10  space-y-xl flex-1"
+        >
+          {/* Intro  */}
+          <div className="flex flex-col items-center justify-center pb-8 text-center">
+            <div className="mb-4 rounded-full border border-border/40 bg-primary/10 px-4 py-2 text-sm text-text-secondary">
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+              })}
             </div>
-          </div>
-
-          {/* AI Message  */}
-          <div className="flex items-start gap-md max-w-3xl">
-            <div className="h-10 w-10 rounded-full shrink-0">
-              <img src="/favi-removebg.png" />
-            </div>
-            <div className="flex flex-col gap-xs">
-              <div className="bg-white p-lg rounded-2xl rounded-tl-none shadow-sm border border-border/50 text-text-primary body-lg relative group">
-                Hello Sarah! It's great to see you again. Based on your activity
-                yesterday, you might need a bit more protein today to help with
-                muscle recovery. How are you feeling this morning?
+            {/* dissappers when user start conversation */}
+            {messages.length === 0 && (
+              <div>
+                <h1 className="text-3xl font-semibold tracking-tight text-text-primary/80">
+                  Hey, {user.name}. Ready when you are
+                </h1>
+                <p className="mt-2 max-w-3xl text-sm text-text-secondary">
+                  Ask me anything about your nutrition, meals, or daily health
+                  goals.
+                </p>{" "}
               </div>
-              <span className="caption text-text-secondary px-sm">
-                09:02 AM
-              </span>
-            </div>
+            )}
           </div>
 
-          {/* User Message  */}
-          <div className="flex items-start gap-md max-w-3xl ml-auto flex-row-reverse">
-            <div className="h-10 w-10 rounded-full shrink-0 shadow-sm border border-primary/20 overflow-hidden">
-              <img className="w-full h-full object-cover" src="/user.jpg" />
-            </div>
-            <div className="flex flex-col gap-xs items-end">
-              <div className="bg-primary text-white p-lg rounded-2xl rounded-tr-none shadow-md body-lg">
-                I'm feeling a bit tired actually! I had a long workout but
-                didn't have a chance to eat much after. Any quick high-protein
-                snack ideas?
+          {messages.map((message, index) => (
+            <Message key={index} message={message} />
+          ))}
+          {isLoading && (
+            <div className="flex items-center gap-md max-w-3xl">
+              <div className="h-10 w-10 rounded-full shrink-0">
+                <img src="/favi-removebg.png" />
               </div>
-              <span className="caption text-text-secondary px-sm">
-                09:05 AM
-              </span>
-            </div>
-          </div>
 
-          {/* AI Message  */}
-          <div className="flex items-start gap-sm md:gap-md max-w-3xl">
-            <div className="h-10 w-10 rounded-full shrink-0">
-              <img src="/favi-removebg.png" />
-            </div>
-            <div className="flex flex-col gap-xs">
-              <div className="bg-surface p-lg rounded-2xl rounded-tl-none shadow-sm border border-success/10 text-text-primary body-lg">
-                <p className="mb-md">
-                  I'm sorry to hear you're feeling tired, but that was a great
-                  effort on the workout! Let's get your energy back up. Here are
-                  three quick high-protein options:
-                </p>
-                <ul className="space-y-sm mb-md">
-                  <li className="flex gap-sm">
-                    <span className=" font-bold">1.</span>
-                    <span className="">
-                      Greek Yogurt with a handful of almonds and a drizzle of
-                      honey (~18g protein).
-                    </span>
-                  </li>
-                  <li className="flex gap-sm">
-                    <span className=" font-bold">2.</span>
-                    <span className="">
-                      Two hard-boiled eggs with a pinch of sea salt and pepper
-                      (~12g protein).
-                    </span>
-                  </li>
-                  <li className="flex gap-sm">
-                    <span className=" font-bold">3.</span>
-                    <span className="">
-                      A scoop of whey or plant-based protein shaken with water
-                      or almond milk (~20-25g protein).
-                    </span>
-                  </li>
-                </ul>
-                <p className="">
-                  Do any of those sound good, or would you like something more
-                  savory?
-                </p>
+              <div className="bg-surface p-md rounded-2xl rounded-tl-none border border-border flex gap-xs">
+                <span className="w-1.5 h-1.5 bg-text-secondary rounded-full animate-bounce"></span>
+                <span className="w-1.5 h-1.5 bg-text-secondary rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-1.5 h-1.5 bg-text-secondary rounded-full animate-bounce [animation-delay:0.4s]"></span>
               </div>
-              <span className="caption text-text-secondary px-sm">
-                09:06 AM
-              </span>
             </div>
-          </div>
-
-          {/* Typing Indicator (Simulated)  */}
-          <div
-            className="flex items-center gap-md max-w-3xl  "
-            id="typing-indicator"
-          >
-            <div className="h-10 w-10 rounded-full shrink-0">
-              <img src="/favi-removebg.png" />
-            </div>
-            <div className="bg-surface p-md rounded-2xl rounded-tl-none border border-border flex gap-xs">
-              <span className="w-1.5 h-1.5 bg-text-secondary rounded-full animate-bounce"></span>
-              <span className="w-1.5 h-1.5 bg-text-secondary rounded-full animate-bounce [animation-delay:0.2s]"></span>
-              <span className="w-1.5 h-1.5 bg-text-secondary rounded-full animate-bounce [animation-delay:0.4s]"></span>
-            </div>
-          </div>
+          )}
         </div>
-
         {/* Chat Controls & Input  */}
-        <div className="relative z-20 px-xl pb-xl pt-lg  border-t border-border/50">
+        <div className="relative z-20 px-xl pb-xl pt-lg mt-lg  border-t border-border/50">
           {/* Input Area  */}
           <div className="max-w-4xl mx-auto flex items-end gap-md">
             <div className="flex-1 relative">
               <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 className="rounded-2xl pr-xxl resize-none body-lg shadow-sm p-lg"
                 placeholder="Ask anything..."
                 rows={1}
@@ -148,6 +134,7 @@ export default function AiChat() {
               </div>
             </div>
             <button
+              onClick={handleSendMessage}
               className="h-12 w-12 flex items-center justify-center bg-primary text-white rounded-2xl shadow-md hover:bg-primary/90 transition-all active:scale-95 group"
               id="send-button"
             >

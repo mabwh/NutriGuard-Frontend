@@ -32,8 +32,9 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // Only try to refresh when the backend returns 401
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Only try to refresh when the backend returns 401 and if it's only the backend not the ai server
+        if (error.response?.status === 401 && !originalRequest._retry &&
+            !originalRequest.skipAuthRefresh) {
             originalRequest._retry = true;
 
             const refreshToken = authStore.getState().refreshToken;
