@@ -4,7 +4,7 @@ import Message from "../components/Message";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { IoMdAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
-import { sendMessageToAI } from "../api/aiChat";
+import { sendMessageToAI } from "../api/AiChat";
 import { authStore } from "../store/auth";
 
 export default function AiChat() {
