@@ -131,8 +131,6 @@ function ProfileEdit({ registerSubmit, setisFormValid }) {
       <CardHeader
         icon={<MdAccountCircle />}
         headline="Personal Information"
-        badgeMsg="Incomplete Profile"
-        badgeType="warning"
       />
 
       <form onSubmit={onSubmitHandler} className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -64,7 +64,7 @@ export default function SignupForm() {
           name="fullName"
           type="text"
           label="Name"
-          placeholder="Enter your email"
+          placeholder="Enter your name"
           {...register("fullName")}
           error={errors.fullName?.message}
         />

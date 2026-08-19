@@ -40,7 +40,7 @@ export default function LoggedInlayout() {
             <IoMenu size={30} className=" text-primary" />
           </button>
 
-          <div class="hidden md:block relative bg-surface border border-border rounded-full w-90">
+          {/* <div class="hidden md:block relative bg-surface border border-border rounded-full w-90">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">
               <IoMdSearch size={22} />
             </span>
@@ -49,7 +49,7 @@ export default function LoggedInlayout() {
               placeholder="Search"
               className=" bg-surface border-none rounded-xl py-2 pl-10 pr-4"
             />
-          </div>
+          </div> */}
 
           <div className="flex items-center">
             <button className="p-2 hover:bg-surface-container rounded-full transition-colors relative">
@@ -232,7 +232,7 @@ export default function LoggedInlayout() {
               My Profile
             </span>
           </NavLink>
-          <NavLink
+          {/* <NavLink
             to={"/settings"}
             onClick={() => setIsOpen(false)}
             className={({ isActive }) => `
@@ -264,7 +264,7 @@ export default function LoggedInlayout() {
             >
               Settings
             </span>
-          </NavLink>
+          </NavLink> */}
         </nav>
       </aside>
       <main
