@@ -16,9 +16,17 @@ import { chpSechema } from "../utils/validation";
 import { createHealthProfile } from "../api/createHealthProfile";
 import { useNavigate } from "react-router-dom";
 import BackendErrorMessage from "../components/BackendErrorMessage";
+import { getHealthRisk } from "../utils/nutritionCalculations";
+import { profileStore } from "../store/profile";
+
 export default function CreateHealthProfile() {
   const navigate = useNavigate();
+
   const [backendError, setBackendError] = useState("");
+  const [healthRisk, setHealthRisk] = useState(null);
+
+  const setProfile = profileStore((state) => state.setProfile);
+
   const {
     register,
     handleSubmit,
@@ -35,6 +43,7 @@ export default function CreateHealthProfile() {
 
   const height = watch("height");
   const weight = watch("weight");
+  const waist = watch("waist");
 
   const calculateGoal = (bmi) => {
     if (bmi < 18.5) {
@@ -55,16 +64,34 @@ export default function CreateHealthProfile() {
       const bmi = weight / (heightInMeters * heightInMeters);
 
       setValue("goal", calculateGoal(bmi));
+
+      if (waist > 0) {
+        const whtr = waist / height;
+
+        const risk = getHealthRisk(bmi, whtr);
+
+        setHealthRisk(risk);
+      }
     }
-  }, [height, weight, setValue]);
+  }, [height, weight, waist, setValue]);
 
   //handlers
   const handleSubmitHealthForm = async (data) => {
     //call api
     try {
       const reply = await createHealthProfile(data);
-      console.log("answer of create health", reply);
+      //console.log("answer of create health", reply);
       if (reply.isSuccess) {
+        setProfile({
+          ...data,
+          healthRiskLevel: healthRisk,
+        });
+
+        if (healthRisk.level === "High Risk") {
+          navigate("/health-risk");
+          return;
+        }
+
         navigate("/dashboard", {
           state: {
             successMessage: "Your health profile was created successfully",
@@ -111,15 +138,15 @@ export default function CreateHealthProfile() {
             {/* <!-- Feature Badges --> */}
             <div className="mt-xxl z-10 flex flex-wrap justify-center gap-sm ">
               <div className="px-md py-sm bg-surface rounded-xl shadow-sm flex items-center gap-xs">
-                <GoShieldLock size={22} className=" text-success" />
+                <GoShieldLock size={22} className="text-success" />
 
                 <span className="label-md text-text-primary">Data Secured</span>
               </div>
+
               <div className="px-md py-sm bg-surface rounded-xl shadow-sm flex items-center gap-xs">
-                <span>
-                  <MdPsychology size={22} className="text-tertiary" />
-                </span>
-                <span className=" label-md text-text-primary">AI Powered</span>
+                <MdPsychology size={22} className="text-tertiary" />
+
+                <span className="label-md text-text-primary">AI Powered</span>
               </div>
             </div>
           </div>
@@ -152,6 +179,7 @@ export default function CreateHealthProfile() {
                     size={22}
                     className="fill-primary shrink-0 text-primary"
                   />
+
                   <h3 className="headline-sm text-text-primary">
                     Personal Information
                   </h3>
@@ -162,6 +190,7 @@ export default function CreateHealthProfile() {
                     <label className="label-md text-text-secondary px-xs">
                       Date of Birth
                     </label>
+
                     <Input
                       {...register("dateOfBirth")}
                       error={errors.dateOfBirth?.message}
@@ -169,10 +198,12 @@ export default function CreateHealthProfile() {
                       type="date"
                     />
                   </div>
+
                   <div className="flex flex-col gap-md">
-                    <label className=" label-md text-text-secondary px-xs">
+                    <label className="label-md text-text-secondary px-xs">
                       Gender
                     </label>
+
                     <div className="flex gap-sm h-full items-center">
                       <label className="flex-1 flex items-center justify-center gap-xs cursor-pointer border border-border rounded-xl py-sm hover:bg-surface-container transition-all">
                         <input
@@ -182,8 +213,10 @@ export default function CreateHealthProfile() {
                           value={1}
                           className="accent-success"
                         />
-                        <span className=" body-md text-text-primary">Male</span>
+
+                        <span className="body-md text-text-primary">Male</span>
                       </label>
+
                       <label className="flex-1 flex items-center justify-center gap-xs cursor-pointer border border-border rounded-xl px-sm py-sm hover:bg-surface-container transition-all">
                         <input
                           {...register("gender")}
@@ -193,11 +226,12 @@ export default function CreateHealthProfile() {
                           className="accent-success"
                         />
 
-                        <span className=" body-md text-text-primary">
+                        <span className="body-md text-text-primary">
                           Female
                         </span>
                       </label>
                     </div>
+
                     {errors.gender && (
                       <p className="text-sm text-error">
                         {errors.gender.message}
@@ -237,7 +271,7 @@ export default function CreateHealthProfile() {
                     </label>
                     <Input
                       {...register("weight", { valueAsNumber: true })}
-                      placeholder="e.g. 175"
+                      placeholder="e.g. 75"
                       type="number"
                       error={errors.weight?.message}
                     />

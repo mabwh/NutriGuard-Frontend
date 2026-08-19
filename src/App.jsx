@@ -15,6 +15,7 @@ import DailyMeals from "./pages/DailyMeals";
 import NotFound from "./pages/NotFound";
 import Settings from "./profile/screens/Settings";
 import MealDetails from "./pages/MealDetails";
+import HealthRisk from "./pages/HealthRisk";
 
 export default function App() {
   return (
@@ -22,12 +23,15 @@ export default function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/health-risk" element={<HealthRisk/>}/>
         </Route>
 
         <Route element={<ProtectedRoutes />}>
+          
           <Route path="/create-health-profile" element={<CreateHealthProfile />}/>
+          <Route element={<ProfileLoader />}>
           <Route element={<LoggedInlayout />}>
-            <Route element={<ProfileLoader />}>
+            
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/chat" element={<AiChat />} />

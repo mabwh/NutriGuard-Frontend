@@ -134,3 +134,33 @@ export const calculateNutritionNeeds = (profile) => {
         water,
     };
 };
+
+export const getHealthRisk = (bmi, whtr) => {
+    // High
+    if (bmi >= 30 || whtr >= 0.6) {
+        return {
+            level: "High Risk",
+            description:
+                "Your measurements indicate increased health risk. Consider speaking with a healthcare professional.",
+            segments: 3,
+        };
+    }
+
+    // Moderate
+    if (bmi >= 25 || whtr >= 0.5) {
+        return {
+            level: "Moderate Risk",
+            description:
+                "Your measurements indicate some increased health risk. Maintaining a healthy weight and waist size can help.",
+            segments: 2,
+        };
+    }
+
+    // Low
+    return {
+        level: "Low Risk",
+        description:
+            "Your BMI and waist-to-height ratio are currently within the healthy screening range.",
+        segments: 1,
+    };
+};

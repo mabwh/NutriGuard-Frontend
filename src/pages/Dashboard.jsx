@@ -18,7 +18,7 @@ export default function Dashboard() {
   const location = useLocation();
   const successMessage = location.state?.successMessage;
   const profile = profileStore((state) => state.profile);
-  //console.log("health profile", profile);
+  console.log("health profile", profile);
   const goalUiKit = {
     LoseWeight: {
       bg: "bg-error",
@@ -49,7 +49,6 @@ export default function Dashboard() {
     const heightInMeters = height / 100;
     bmi = weight / (heightInMeters * heightInMeters);
   }
-  const whtr = height > 0 ? (profile?.waist ?? 0) / height : 0;
 
   const currentGoal =
     bmi >= 25
@@ -57,37 +56,8 @@ export default function Dashboard() {
       : bmi >= 18.5
         ? goalUiKit.MaintainWeight
         : goalUiKit.GainWeight;
-  const getHealthRisk = (bmi, whtr) => {
-    // High
-    if (bmi >= 30 || whtr >= 0.6) {
-      return {
-        level: "High Risk",
-        description:
-          "Your measurements indicate increased health risk. Consider speaking with a healthcare professional.",
-        segments: 3,
-      };
-    }
 
-    // Moderate
-    if (bmi >= 25 || whtr >= 0.5) {
-      return {
-        level: "Moderate Risk",
-        description:
-          "Your measurements indicate some increased health risk. Maintaining a healthy weight and waist size can help.",
-        segments: 2,
-      };
-    }
-
-    // Low
-    return {
-      level: "Low Risk",
-      description:
-        "Your BMI and waist-to-height ratio are currently within the healthy screening range.",
-      segments: 1,
-    };
-  };
-
-  const healthRisk = getHealthRisk(bmi, whtr);
+  const healthRisk = profile?.healthRiskLevel;
   //for ui
   const riskColors = {
     "Low Risk": {
@@ -198,7 +168,7 @@ export default function Dashboard() {
               />
             </div>
             <div>
-              <p className="headline-sm text-text-on-surface">
+              <p className={`headline-sm ${currentRiskColors.text}`}>
                 {healthRisk.level}
               </p>
               <p className="text-[14px] text-text-secondary mt-1">
