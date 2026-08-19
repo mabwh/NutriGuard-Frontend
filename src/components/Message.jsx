@@ -1,5 +1,5 @@
 export default function Message({ message }) {
-  const isUser = message.sender === "user";
+  const isUser = message?.sender === "user";
 
   return (
     <div
@@ -26,10 +26,10 @@ export default function Message({ message }) {
               : "bg-surface rounded-tl-none shadow-sm border border-success/10 text-text-primary"
           }`}
         >
-          {message.text}
+          {message?.text}
         </div>
         <span className="caption text-text-secondary px-sm">
-          {message.timestamp.toLocaleTimeString([], {
+          {message?.timestamp?.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           })}

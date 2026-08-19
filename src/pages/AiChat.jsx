@@ -6,6 +6,7 @@ import { IoMdAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
 import { sendMessageToAI } from "../api/AiChat";
 import { authStore } from "../store/auth";
+import { chatStore } from "../store/chat";
 
 export default function AiChat() {
   const user = authStore((state) => state.user);
@@ -13,7 +14,9 @@ export default function AiChat() {
   //for current user message in textarea
   const [message, setMessage] = useState("");
   //for conversation history
-  const [messages, setMessages] = useState([]);
+  const chat = chatStore((state) => state.messages);
+  const addMessage = chatStore((state) => state.addMessage);
+  const clearMessages = chatStore((state) => state.clearMessages);
   // NEW CODE:
   // This stores the AI context separately from display-only message history.
   const [conversationContext, setConversationContext] = useState(null);
@@ -41,7 +44,7 @@ export default function AiChat() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    addMessage(userMessage);
 
     try {
       setIsLoading(true);
@@ -75,12 +78,12 @@ export default function AiChat() {
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, aiMessage]);
+      addMessage(aiMessage);
 
-      console.log("my array of history\n", messages);
+      console.log("my array of history\n", chat);
     } catch (error) {
       console.log(error.response?.data);
-      console.log("AI chat error:", error);
+      console.log("AI chat error:\n", error);
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +94,7 @@ export default function AiChat() {
   // NEW CODE:
   // A new chat clears only the UI history and AI conversation state, never authentication.
   const handleNewConversation = () => {
-    setMessages([]);
+    clearMessages();
     setConversationContext(null);
     setMessage("");
     setConfirmationData(null);
@@ -109,7 +112,7 @@ export default function AiChat() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    addMessage(userMessage);
 
     try {
       setIsLoading(true);
@@ -131,11 +134,11 @@ export default function AiChat() {
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, aiMessage]);
+      addMessage(aiMessage);
       setConfirmationData(null);
     } catch (error) {
       console.log(error.response?.data);
-      console.log("AI confirmation error:", error);
+      console.log("AI confirmation error:\n", error);
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +152,7 @@ export default function AiChat() {
         behavior: "smooth",
       });
     }
-  }, [messages, isLoading]);
+  }, [chat, isLoading]);
 
   return (
     <>
@@ -157,7 +160,9 @@ export default function AiChat() {
         <ConfirmationModal
           isOpen={confirmationData !== null}
           selections={confirmationData?.selections || []}
-          totalNutritionSnapshot={confirmationData?.totalNutritionSnapshot || {}}
+          totalNutritionSnapshot={
+            confirmationData?.totalNutritionSnapshot || {}
+          }
           language="en"
           isLoading={isLoading}
           onConfirm={handleConfirmSelection}
@@ -179,7 +184,7 @@ export default function AiChat() {
               })}
             </div>
             {/* dissappers when user start conversation */}
-            {messages.length === 0 && (
+            {chat.length === 0 && (
               <div>
                 <h1 className="text-3xl font-semibold tracking-tight text-text-primary/80">
                   Hey, {user.name}. Ready when you are
@@ -192,7 +197,7 @@ export default function AiChat() {
             )}
           </div>
 
-          {messages.map((message, index) => (
+          {chat.map((message, index) => (
             <Message key={index} message={message} />
           ))}
           {isLoading && (
