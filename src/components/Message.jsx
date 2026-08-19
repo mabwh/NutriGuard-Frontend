@@ -29,10 +29,11 @@ export default function Message({ message }) {
           {message?.text}
         </div>
         <span className="caption text-text-secondary px-sm">
-          {message?.timestamp?.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {message?.timestamp &&
+            new Date(message.timestamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
         </span>
       </div>
     </div>
