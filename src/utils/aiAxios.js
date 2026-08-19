@@ -51,7 +51,8 @@ aiAxios.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        authStore.getState().setAuth(data);
+        // Refresh responses contain tokens, not the full login payload.
+        authStore.getState().updateTokens(data);
 
         originalRequest.headers = originalRequest.headers || {};
         originalRequest.headers.Authorization = `Bearer ${data.token}`;

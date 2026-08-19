@@ -63,8 +63,8 @@ axiosInstance.interceptors.response.use(
                     return Promise.reject(error);
                 }
 
-                // Update Zustand with the new tokens
-                authStore.getState().setAuth(data);
+                // Refresh responses contain tokens, not the full login payload.
+                authStore.getState().updateTokens(data);
 
                 // Put the new access token on the original request
                 originalRequest.headers.Authorization = `Bearer ${data.token}`;

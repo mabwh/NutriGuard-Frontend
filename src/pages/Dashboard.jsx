@@ -8,7 +8,10 @@ import { LuChartNoAxesCombined } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineForum } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
-import { calculateNutritionNeeds } from "../utils/nutritionCalculations";
+import {
+  calculateNutritionNeeds,
+  getHealthRisk,
+} from "../utils/nutritionCalculations";
 //zustand
 import { authStore } from "../store/auth";
 import { profileStore } from "../store/profile";
@@ -57,7 +60,10 @@ export default function Dashboard() {
         ? goalUiKit.MaintainWeight
         : goalUiKit.GainWeight;
 
-  const healthRisk = profile?.healthRiskLevel;
+  const healthRisk = profile?.healthRiskLevel ?? getHealthRisk(
+    bmi,
+    profile?.height > 0 ? profile.waist / profile.height : 0,
+  );
   //for ui
   const riskColors = {
     "Low Risk": {
@@ -73,7 +79,7 @@ export default function Dashboard() {
       text: "text-error",
     },
   };
-  const currentRiskColors = riskColors[healthRisk.level];
+  const currentRiskColors = riskColors[healthRisk.level] ?? riskColors["Low Risk"];
 
   const nutrition = calculateNutritionNeeds(profile);
   return (

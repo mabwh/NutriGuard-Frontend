@@ -7,6 +7,7 @@ import CardHeader from './CardHeader';
 import { MdAccountCircle } from "react-icons/md";
 import { profileStore } from "../../store/profile";
 import { chpSechema } from "../../utils/validation";
+import { getHealthRisk } from "../../utils/nutritionCalculations";
 import { updateHealthProfile } from "../../api/createHealthProfile";
 
 function ProfileEdit({ registerSubmit, setisFormValid }) {
@@ -98,7 +99,14 @@ function ProfileEdit({ registerSubmit, setisFormValid }) {
         const response = await updateHealthProfile(profileData);
 
         if (response?.isSuccess && response?.data) {
-          setProfile(response.data);
+          const heightInMeters = response.data.height / 100;
+          const bmi = response.data.weight / (heightInMeters * heightInMeters);
+          const whtr = response.data.waist / response.data.height;
+
+          setProfile({
+            ...response.data,
+            healthRiskLevel: getHealthRisk(bmi, whtr),
+          });
         }
       } catch (error) {
         console.log(error);
