@@ -1,20 +1,31 @@
 const activityMultipliers = {
-    Sedentary: 1.2,
-    LightlyActive: 1.375,
-    ModeratelyActive: 1.55,
-    VeryActive: 1.725,
+    1: 1.2,
+    2: 1.375,
+    3: 1.55,
+    4: 1.725,
+    5: 1.9,
 };
 
 const goalAdjustments = {
+    1: -500,
+    2: 0,
+    3: 300,
     LoseWeight: -500,
     MaintainWeight: 0,
     GainWeight: 300,
 };
 
-const PROTEIN_G_PER_KG = 1.6;
-const FAT_G_PER_KG = 1;
+const macroPercentages = {
+    1: { protein: 0.45, carbs: 0.3, fat: 0.2 },
+    2: { protein: 0.35, carbs: 0.4, fat: 0.25 },
+    3: { protein: 0.35, carbs: 0.45, fat: 0.2 },
+    LoseWeight: { protein: 0.45, carbs: 0.3, fat: 0.2 },
+    MaintainWeight: { protein: 0.35, carbs: 0.4, fat: 0.25 },
+    GainWeight: { protein: 0.35, carbs: 0.45, fat: 0.2 },
+};
+
 const FIBER_G_PER_1000_CALORIES = 14;
-const WATER_ML_PER_KG = 35;
+const WATER_ML_PER_KG = 30;
 
 const calculateAge = (dateOfBirth) => {
     const birthDate = new Date(dateOfBirth);
@@ -47,17 +58,18 @@ export const calculateNutritionNeeds = (profile) => {
 
     let bmr;
 
-    if (profile.gender === "Male") {
+    // The profile forms store gender as 1 (male) or 2 (female).
+    if (Number(profile.gender) === 1 || profile.gender === "Male") {
         bmr =
-            10 * profile.weight +
-            6.25 * profile.height -
-            5 * age +
+            (10 * profile.weight) +
+            (6.25 * profile.height) -
+            (5 * age) +
             5;
     } else {
         bmr =
-            10 * profile.weight +
-            6.25 * profile.height -
-            5 * age -
+            (10 * profile.weight) +
+            (6.25 * profile.height) -
+            (5 * age) -
             161;
     }
 
@@ -74,38 +86,22 @@ export const calculateNutritionNeeds = (profile) => {
     // 3. Calories based on goal
     // -------------------------
 
-    const goalAdjustment =
-        goalAdjustments[profile.goal] ?? 0;
+    const goal = Number.isFinite(Number(profile.goal))
+        ? Number(profile.goal)
+        : profile.goal;
+
+    const goalAdjustment = goalAdjustments[goal] ?? 0;
 
     const dailyCalories = tdee + goalAdjustment;
 
     // -------------------------
-    // 4. Protein
+    // 4. Macros
     // -------------------------
 
-    const protein = profile.weight * PROTEIN_G_PER_KG;
-
-    const proteinCalories = protein * 4;
-
-    // -------------------------
-    // 5. Fat
-    // -------------------------
-
-    const fat = profile.weight * FAT_G_PER_KG;
-
-    const fatCalories = fat * 9;
-
-    // -------------------------
-    // 6. Carbs
-    // Remaining calories
-    // -------------------------
-
-    const carbCalories =
-        dailyCalories -
-        proteinCalories -
-        fatCalories;
-
-    const carbs = carbCalories / 4;
+    const percentages = macroPercentages[goal] ?? macroPercentages[2];
+    const protein = (dailyCalories * percentages.protein) / 4;
+    const carbs = (dailyCalories * percentages.carbs) / 4;
+    const fat = (dailyCalories * percentages.fat) / 9;
 
     // -------------------------
     // 7. Fiber
@@ -119,8 +115,7 @@ export const calculateNutritionNeeds = (profile) => {
     // 8. Water
     // -------------------------
 
-    const water =
-        (profile.weight * WATER_ML_PER_KG) / 1000;
+    const water = (profile.weight * WATER_ML_PER_KG) / 1000;
 
     return {
         age,
