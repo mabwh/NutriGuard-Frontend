@@ -4,6 +4,8 @@ import { MdOutlineSupportAgent } from "react-icons/md";
 import { logout } from "../auth/api/auth";
 import { authStore } from "../store/auth";
 import { useNavigate } from "react-router-dom";
+import { FaMoon } from "react-icons/fa6";
+
 
 export default function HealthRisk() {
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ export default function HealthRisk() {
         {/*  Brand/Icon  */}
         <div className="mb-8 flex justify-center">
           <div className="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center border border-error/20">
-            <FaBriefcaseMedical size={40} className="text-error" />
+            <FaMoon size={40} className="text-error rotate-18" />
           </div>
         </div>
         {/*  Header  */}
