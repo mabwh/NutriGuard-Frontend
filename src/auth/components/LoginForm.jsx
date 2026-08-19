@@ -44,15 +44,19 @@ export default function LoginForm({ successMessage }) {
           const reply = await getHealthProfile();
           if (reply.isSuccess) {
             navigate("/dashboard");
-          } else {
-            navigate("/create-health-profile");
           }
         } catch (error) {
-          console.log(error.response?.data);
+          if (error.response?.status === 404) {
+            // No health profile yet — this is expected
+            navigate("/create-health-profile");
+          } else {
+            // Actual/unexpected error
+            console.log("error getting profile", error.response?.data);
+          }
         }
       }
     } catch (error) {
-      console.log(error.response?.data);
+      console.log("error in login submit", error.response?.data);
       setBackendError(
         error.response?.data?.message || "Login failed. Try again ",
       );
