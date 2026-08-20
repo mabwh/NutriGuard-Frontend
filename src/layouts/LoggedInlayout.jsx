@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { IoMdSearch, IoMdNotificationsOutline } from "react-icons/io";
 import { MdDashboard } from "react-icons/md";
@@ -13,6 +13,9 @@ import {
 } from "react-icons/io5";
 
 import Input from "../components/Input";
+import { BiLogOut } from "react-icons/bi";
+import { logout } from "../auth/api/auth";
+import { authStore } from "../store/auth";
 
 export default function LoggedInlayout() {
   // Controls whether the mobile sidebar is open.
@@ -20,6 +23,21 @@ export default function LoggedInlayout() {
 
   // Controls whether the desktop/tablet sidebar is collapsed.
   const [collapsed, setCollapsed] = useState(false);
+
+  //dropdown menu
+  const [isDropOpen, setIsDropOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      authStore.getState().clearAuth();
+      navigate("/");
+    } catch (error) {
+      console.log("Logout failed:\n", error);
+    }
+  };
 
   return (
     <>
@@ -56,11 +74,36 @@ export default function LoggedInlayout() {
               <IoMdNotificationsOutline size={22} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
             </button>
-            <div className="flex items-center pl-2">
-              <img
-                className="w-10 h-10 rounded-full object-cover "
-                src="/user.jpg"
-              />
+            <div className="flex items-center pl-2 relative group/profile">
+              <button onClick={() => setIsDropOpen(!isDropOpen)}>
+                <img
+                  className="w-10 h-10 rounded-full object-cover "
+                  src="/user.jpg"
+                />
+              </button>
+              {isDropOpen && (
+                <div className="absolute right-0 mt-35 w-48 bg-surface rounded-default shadow-lg border border-border py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <Link
+                    to={"/profile"}
+                    onClick={() => setIsDropOpen(false)}
+                    className="flex items-center gap-md px-md py-2 text-body-md text-text-primary hover:bg-surface-container/50 transition-colors rounded"
+                  >
+                    <IoPersonOutline
+                      size={20}
+                      className="text-text-secondary"
+                    />
+                    <span className="">My Profile</span>
+                  </Link>
+                  <div className="h-px bg-border mx-4 my-1"></div>
+                  <button
+                    onClick={handleLogout}
+                    className=" w-full flex items-center gap-md px-md py-2 text-body-md text-error hover:bg-error/5 transition-colors"
+                  >
+                    <BiLogOut size={22} />
+                    Log Out
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

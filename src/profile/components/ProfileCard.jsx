@@ -11,16 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 function ProfileCard({ setProfileEdit, profileEdit, submitRef, isFormValid }) {
   const user = authStore((state) => state.user);
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    try {
-      await logout();
-      authStore.getState().clearAuth();
-      navigate("/");
-    } catch (error) {
-      console.log("Logout failed:\n", error);
-    }
-  };
+
   return (
     <>
       <Card className="md:col-span-4 flex flex-col items-center text-center h-full">
@@ -64,14 +55,6 @@ function ProfileCard({ setProfileEdit, profileEdit, submitRef, isFormValid }) {
               <IoSave /> Save profile updates
             </>
           )}
-        </Button>
-
-        <Button
-          onClick={handleLogout}
-          variant="ghost"
-          className="border border-text-secondary"
-        >
-          Log Out
         </Button>
 
         {profileEdit && (
