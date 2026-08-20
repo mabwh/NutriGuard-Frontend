@@ -12,6 +12,7 @@ export default function HealthRisk() {
   const handleLogout = async () => {
     try {
       await logout();
+      console.log("CLEARING AUTH FROM handleLogout from health risk page");
       authStore.getState().clearAuth();
       navigate("/");
     } catch (error) {

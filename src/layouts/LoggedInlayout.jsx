@@ -32,6 +32,7 @@ export default function LoggedInlayout() {
   const handleLogout = async () => {
     try {
       await logout();
+      console.log("CLEARING AUTH FROM handleLogout from loggedin layout");
       authStore.getState().clearAuth();
       navigate("/");
     } catch (error) {

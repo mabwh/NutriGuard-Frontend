@@ -1,4 +1,4 @@
-import React from "react";
+
 import { MdEdit } from "react-icons/md";
 import { MdAccessibilityNew } from "react-icons/md";
 import Card from "../../components/Card";
@@ -6,8 +6,7 @@ import Button from "../../components/Button";
 import pfp from "../../../public/user.jpg";
 import { IoSave } from "react-icons/io5";
 import { authStore } from "../../store/auth";
-import { logout } from "../../auth/api/auth";
-import { useNavigate } from "react-router-dom";
+
 
 function ProfileCard({ setProfileEdit, profileEdit, submitRef, isFormValid }) {
   const user = authStore((state) => state.user);
